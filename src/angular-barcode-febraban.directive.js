@@ -1,12 +1,6 @@
 (function () {
     "use strict";
 
-    angular
-        .module("angular-barcode-febraban")
-        .directive("ngBarcodeFebraban", ngBarcodeFebraban);
-
-    ngBarcodeFebraban.$inject = ["ngBarcodeUtils"];
-
     function ngBarcodeFebraban(ngBarcodeUtils) {
 
         var directive = {
@@ -21,13 +15,20 @@
         function link(scope, element, attrs) {
 
             attrs.$observe("barcodeSequence", function (value) {
-                if (angular.isDefined(value)
-                    && angular.isNumber(Number(value)) 
-                    && !isNaN(Number(value))) {
+                if (angular.isDefined(value) &&
+                    angular.isNumber(Number(value)) &&
+                    !isNaN(Number(value))) {
                     scope.sequence = ngBarcodeUtils.generateBarcodeSequence(attrs.barcodeSequence);
                 }
             });
 
         }
     }
+
+    ngBarcodeFebraban.$inject = ["ngBarcodeUtils"];
+
+    angular
+        .module("angular-barcode-febraban")
+        .directive("ngBarcodeFebraban", ngBarcodeFebraban);
+
 })();

@@ -12,7 +12,11 @@
   "keywords": [
     "barcode",
     "angular",
-    "febraban"
+    "febraban",
+    "intercalado 2 de 5",
+    "interleaved 2 of 5",
+    "boleto",
+    "código de barras"
   ],
   "author": "Allan Martins de Paula",
   "license": "ISC",
@@ -21,14 +25,16 @@
   },
   "homepage": "https://github.com/allansli/angular-barcode-febraban#readme",
   "devDependencies": {
+    "angular-mocks": "^1.5.8",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
     "gulp-cssnano": "^2.1.2",
+    "gulp-eslint": "^3.0.1",
     "gulp-jshint": "^2.0.1",
-    "gulp-livereload": "^3.8.1",
     "gulp-uglify": "^2.0.0",
     "jasmine": "^2.5.1",
+    "jshint": "^2.9.3",
     "karma": "^1.3.0",
     "karma-jasmine": "^1.0.2"
   },
