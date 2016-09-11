@@ -1,0 +1,10 @@
+/node_modules/
+bower_components/
+npm-debug.log
+/tmp/
+/scripts/bower/bower-*
+.vscode
+/assets/
+/src/
+/tests/
+/demo/
