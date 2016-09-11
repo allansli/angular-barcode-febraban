@@ -9,7 +9,9 @@
 <body ng-app="barcode-demo">
 
     <div ng-controller="BarcodeDemoController as bCtrl">
-        <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
+        <span>Input Barcode Sequence: </span><input type="text" ng-model="bCtrl.sequence" />
+        <hr>
+        <ng-barcode-febraban barcode-sequence="{{bCtrl.sequence}}"></ng-barcode-febraban>
     </div>
 
     <script src="../node_modules/angular/angular.min.js"></script>
