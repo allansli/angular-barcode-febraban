@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Angular Directive to Render Interleaved 2 of 5 Barcode - Demo</title>
+    <link rel="stylesheet" href="../assets/css/barcode.css">
+</head>
+
+<body ng-app="barcode-demo">
+
+    <div ng-controller="BarcodeDemoController as bCtrl">
+        <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
+    </div>
+
+    <script src="../node_modules/angular/angular.min.js"></script>
+    <script src="../src/angular-barcode-febraban.module.js"></script>
+    <script src="../src/angular-barcode-febraban.utils.js"></script>
+    <script src="../src/angular-barcode-febraban.directive.js"></script>
+    <script src="index.js"></script>
+    <script src="index-controller.js"></script>
+
+</body>
+
+</html>
