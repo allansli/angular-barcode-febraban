@@ -3,7 +3,7 @@ var concat = require("gulp-concat");
 var jshint = require("gulp-jshint");
 var uglify = require("gulp-uglify");
 var del = require("del");
-var cssnano = require("gulp-cssnano");
+var cssmin = require("gulp-cssmin");
 
 
 gulp.task("lint", function () {
@@ -33,7 +33,7 @@ gulp.task("concat-js-files", function () {
 
 gulp.task("minify-css", function () {
     return gulp.src("./assets/css/barcode.css")
-        .pipe(cssnano())
+        .pipe(cssmin())
         .pipe(gulp.dest("./dist/css/"));
 });
 
