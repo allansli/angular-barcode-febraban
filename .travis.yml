@@ -1,4 +1,4 @@
 before_script:
   - npm install -g gulp
-  - npm install gulp
+  - npm install
 script: gulp
