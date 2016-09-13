@@ -26,6 +26,7 @@
   "homepage": "https://github.com/allansli/angular-barcode-febraban#readme",
   "devDependencies": {
     "angular-mocks": "^1.5.8",
+    "coveralls": "^2.11.12",
     "del": "^2.2.2",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.0",
