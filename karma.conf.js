@@ -45,7 +45,8 @@ module.exports = function (config) {
       dir: 'coverage/',
       reporters: [
         // reporters not supporting the `file` property
-        { type: 'html', subdir: 'report-html' }
+        { type: 'html', subdir: 'report-html' },
+        {type: 'lcov', subdir: 'lcov-report'}
       ]
     },
 
@@ -88,9 +89,6 @@ module.exports = function (config) {
 
   if (process.env.TRAVIS) {
     configuration.browsers = ['Chrome_travis_ci'];
-    config.coverageReporter.reporters.push({
-      type: 'lcov', subdir: 'lcov-report'
-    });
   }
 
   config.set(configuration);
