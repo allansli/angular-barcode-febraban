@@ -4,6 +4,7 @@ Angular Directive to Render Interleaved 2 of 5 Barcode
 
 [![npm version](https://badge.fury.io/js/angular-barcode-febraban.svg)](https://badge.fury.io/js/angular-barcode-febraban)
 [![Build Status](https://travis-ci.org/allansli/angular-barcode-febraban.svg?branch=develop)](https://travis-ci.org/allansli/angular-barcode-febraban)
+[![Coverage Status](https://coveralls.io/repos/github/allansli/angular-barcode-febraban/badge.svg?branch=master)](https://coveralls.io/github/allansli/angular-barcode-febraban?branch=master)
 [![NPM Downloads](https://img.shields.io/npm/dt/angular-barcode-febraban.svg)](https://www.npmjs.com/package/angular-barcode-febraban)
 [![dependencies](https://david-dm.org/allansli/angular-barcode-febraban/status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
 [![devDependencies](https://david-dm.org/allansli/angular-barcode-febraban/dev-status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
