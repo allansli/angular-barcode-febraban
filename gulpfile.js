@@ -51,7 +51,7 @@ gulp.task("copy-barcode-font", function () {
 });
 
 gulp.task("copy-demo", function () {
-    return gulp.src("./demo/**")
+    return gulp.src(["./demo/**", "!./demo/index_git.html"])
         .pipe(gulp.dest("./dist/demo/"));
 });
 
