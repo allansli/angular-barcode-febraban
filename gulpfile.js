@@ -4,7 +4,15 @@ var jshint = require("gulp-jshint");
 var uglify = require("gulp-uglify");
 var del = require("del");
 var cssmin = require("gulp-cssmin");
+var Server = require("karma").Server;
 
+
+gulp.task("test", function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});
 
 gulp.task("lint", function () {
     return gulp.src(["src/*.js", "!node_modules/**"])
@@ -51,7 +59,7 @@ gulp.task("copy-files", ["concat-js-files", "minify-css", "copy-barcode-font", "
 
 });
 
-gulp.task("build", ["lint"], function () {
+gulp.task("build", ["lint", "test"], function () {
 
 });
 
