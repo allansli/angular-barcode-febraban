@@ -19,3 +19,6 @@ Angular Directive to Render Interleaved 2 of 5 Barcode
  * `<link rel="stylesheet" href="../node_modules/angular-barcode-febraban/dist/css/barcode.css" />`
 4. Use the directive as example below:
  * `<ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>`
+
+ ## Demo
+ Please, see the live demo [here](http://htmlpreview.github.io/?https://github.com/allansli/angular-barcode-febraban/blob/master/demo/index_git.html).
