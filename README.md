@@ -10,14 +10,14 @@ Angular Directive to Render Interleaved 2 of 5 Barcode
 [![devDependencies](https://david-dm.org/allansli/angular-barcode-febraban/dev-status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
 
 ## Usage
-- Install **angular-barcode-febraban** using **npm**.
+1. Install **angular-barcode-febraban** using **npm**.
  * `npm install angular-barcode-febraban --save`
-- Include module **angular-barcode-febraban** into your app.
+2. Include module **angular-barcode-febraban** into your app.
  * `angular.module("my.app", ["angular-barcode-febraban"]);`
-- Add **script** and **css** references in html.
+3. Add **script** and **css** references in html.
  * `<script src="../node_modules/angular-barcode-febraban/dist/angular-barcode-febraban.min.js"></script>`
  * `<link rel="stylesheet" href="../node_modules/angular-barcode-febraban/dist/css/barcode.css" />`
-- Use the directive as example below:
+4. Use the directive as example below:
  * `<ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>`
 
 ## Demo
