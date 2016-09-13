@@ -42,8 +42,12 @@ module.exports = function (config) {
     reporters: ['progress', 'coverage'],
 
     coverageReporter: {
-      type: 'html',
-      dir: 'coverage/'
+      dir: 'coverage/',
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'report-html' },
+        { type: 'lcovonly', subdir: '.', file: 'report-lcovonly.txt' }
+      ]
     },
 
     // web server port
@@ -86,6 +90,6 @@ module.exports = function (config) {
   if (process.env.TRAVIS) {
     configuration.browsers = ['Chrome_travis_ci'];
   }
-  
+
   config.set(configuration);
 }
