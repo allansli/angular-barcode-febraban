@@ -2,7 +2,8 @@ before_script:
   - npm install -g gulp
   - npm install
 script: gulp
-after_success: coveralls
+after_script:
+  - npm run coveralls
 before_install:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
