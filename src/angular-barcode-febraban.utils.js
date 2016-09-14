@@ -27,16 +27,12 @@
         return barcodeSequence;
     }
 
-    function utils() {
-        var utilsReturn = {
-            generateBarcodeSequence: generateBarcodeSequence
-        };
-
-        return utilsReturn;
-    }
+    var utils = {
+        generateBarcodeSequence: generateBarcodeSequence
+    };
 
     angular
         .module("angular-barcode-febraban")
-        .service("ngBarcodeUtils", utils);
+        .constant("ngBarcodeUtils", utils);
 
 })();
