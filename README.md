@@ -14,13 +14,13 @@ Check out [here](http://htmlpreview.github.io/?https://github.com/allansli/angul
 ## Usage
 
 Install **angular-barcode-febraban** using **npm**.
- ```js 
- npm install angular-barcode-febraban --save
- `
+```js 
+npm install angular-barcode-febraban --save
+```
 
 Include module **angular-barcode-febraban** into your app.
- ```js
- angular.module("my.app", ["angular-barcode-febraban"]);`
+```js
+angular.module("my.app", ["angular-barcode-febraban"]);`
 ```
 
 Add **script** and **css** references in html.
@@ -30,7 +30,7 @@ Add **script** and **css** references in html.
 ```
 
 Use the directive as example below:
- ```html
- <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
- ```
+```html
+<ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
+```
 
