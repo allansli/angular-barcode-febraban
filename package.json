@@ -16,7 +16,10 @@
     "intercalado 2 de 5",
     "interleaved 2 of 5",
     "boleto",
-    "código de barras"
+    "código de barras",
+    "ITF",
+    "ITF barcode",
+    "código de barras ITF"
   ],
   "author": "Allan Martins de Paula",
   "license": "ISC",

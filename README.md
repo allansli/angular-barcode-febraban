@@ -1,5 +1,5 @@
 # angular-barcode-febraban
-Angular Directive to Render Interleaved 2 of 5 Barcode
+Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode
 
 [![npm version](https://badge.fury.io/js/angular-barcode-febraban.svg)](https://badge.fury.io/js/angular-barcode-febraban)
 [![Build Status](https://travis-ci.org/allansli/angular-barcode-febraban.svg?branch=develop)](https://travis-ci.org/allansli/angular-barcode-febraban)
