@@ -1,5 +1,10 @@
 # angular-barcode-febraban
-Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode
+Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode.
+
+ * ITF barcode rendered as text;
+ * No images;
+ * No http requests;
+ * No 3rd party library dependencies (except for `angular` itself);
 
 [![npm version](https://badge.fury.io/js/angular-barcode-febraban.svg)](https://badge.fury.io/js/angular-barcode-febraban)
 [![Build Status](https://travis-ci.org/allansli/angular-barcode-febraban.svg?branch=develop)](https://travis-ci.org/allansli/angular-barcode-febraban)
