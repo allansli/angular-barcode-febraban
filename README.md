@@ -39,3 +39,8 @@ Use the directive as example below:
 <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
 ```
 
+
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/badge.svg?style=beer-square)](https://beerpay.io/allansli/angular-barcode-febraban)  [![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/make-wish.svg?style=flat-square)](https://beerpay.io/allansli/angular-barcode-febraban?focus=wish)
