@@ -1,5 +1,6 @@
 # angular-barcode-febraban
-[![npm version](https://badge.fury.io/js/angular-barcode-febraban.svg)](https://badge.fury.io/js/angular-barcode-febraban)
+[![npm version](https://img.shields.io/npm/v/angular-barcode-febraban.svg)](https://www.npmjs.com/package/angular-barcode-febraban)
+[![Package Quality](http://npm.packagequality.com/shield/angular-barcode-febraban.svg)](http://packagequality.com/#?package=angular-barcode-febraban)
 [![Build Status](https://travis-ci.org/allansli/angular-barcode-febraban.svg?branch=develop)](https://travis-ci.org/allansli/angular-barcode-febraban)
 [![Coverage Status](https://coveralls.io/repos/github/allansli/angular-barcode-febraban/badge.svg?branch=master)](https://coveralls.io/github/allansli/angular-barcode-febraban?branch=master)
 [![NPM Downloads](https://img.shields.io/npm/dt/angular-barcode-febraban.svg)](https://www.npmjs.com/package/angular-barcode-febraban)
