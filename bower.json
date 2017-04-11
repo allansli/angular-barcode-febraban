@@ -1,0 +1,40 @@
+{
+  "name": "angular-barcode-febraban",
+  "description": "Angular Directive to Render Interleaved 2 of 5 Barcode",
+  "main": "dist/angular-barcode-febraban.min.js",
+  "authors": [
+    "Allan Martins de Paula"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "barcode",
+    "angular",
+    "febraban",
+    "intercalado",
+    "2",
+    "de",
+    "5",
+    "interleaved",
+    "2",
+    "of",
+    "5",
+    "boleto",
+    "código",
+    "de",
+    "barras",
+    "ITF",
+    "ITF",
+    "barcode",
+    "código",
+    "de",
+    "barras",
+    "ITF"
+  ],
+  "homepage": "https://github.com/allansli/angular-barcode-febraban",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "demo"
+  ]
+}
