@@ -4,7 +4,7 @@
     var directive = {
       link: link,
       restrict: "E",
-      template: '<div class="barcodei2of5">{{sequence}}</div>',
+      template: "<div class=\"barcodei2of5\">{{sequence}}</div>",
       scope: false
     };
 
