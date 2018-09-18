@@ -1,5 +1,4 @@
-(function () {
-    "use strict";
-
-    angular.module("angular-barcode-febraban", []);
+(function() {
+  "use strict";
+  angular.module("angular-barcode-febraban", []);
 })();
