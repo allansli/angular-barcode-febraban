@@ -7,12 +7,6 @@
 [![dependencies](https://david-dm.org/allansli/angular-barcode-febraban/status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
 [![devDependencies](https://david-dm.org/allansli/angular-barcode-febraban/dev-status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
 
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/badge.svg?style=beer-square)](https://beerpay.io/allansli/angular-barcode-febraban)  [![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/make-wish.svg?style=flat-square)](https://beerpay.io/allansli/angular-barcode-febraban?focus=wish)
-
-
 Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode.
 
  * ITF barcode rendered as text;
@@ -20,8 +14,10 @@ Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode.
  * No http requests;
  * No 3rd party library dependencies (except for `angular` itself);
 
-## Demo
-Check out [here](http://htmlpreview.github.io/?https://github.com/allansli/angular-barcode-febraban/blob/master/demo/index_git.html).
+## Support on Beerpay
+Hey dude! Help me out for a couple of :beers:!
+
+[![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/badge.svg?style=beer-square)](https://beerpay.io/allansli/angular-barcode-febraban)  [![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/make-wish.svg?style=flat-square)](https://beerpay.io/allansli/angular-barcode-febraban?focus=wish)
 
 ## Usage
 
