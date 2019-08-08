@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "BarcodeInterleaved2of5";
+    src: url("https://github.com/allansli/angular-barcode-febraban/blob/master/assets/fonts/BarcodeInterleaved2of5.ttf?raw=true") format("truetype");
+}
+
+.barcodei2of5 {
+     font-family: "BarcodeInterleaved2of5";
+     font-size: 200px;
+}
