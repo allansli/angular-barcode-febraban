@@ -1,10 +1,10 @@
+services:
+  - xvfb
 before_script:
+  - export CHROME_BIN=chromium-browser
+  - export DISPLAY=:99.0
+ install:
   - npm install -g gulp
   - npm install
 script: gulp
 after_script: "cat ./coverage/lcov-report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
-before_install:
-  - export CHROME_BIN=chromium-browser
-  - export DISPLAY=:99.0
-services:
-  - xvfb
