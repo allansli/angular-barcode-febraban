@@ -4,7 +4,6 @@ before_script:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
  install:
-  - npm install -g gulp
   - npm install
-script: gulp
+script: node_modules/karma/bin/karma start karma.conf.js --single-run
 after_script: "cat ./coverage/lcov-report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
