@@ -9,6 +9,7 @@
     "type": "git",
     "url": "git+https://github.com/allansli/angular-barcode-febraban.git"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "keywords": [
     "barcode",
     "angular",
