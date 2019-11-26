@@ -69,14 +69,16 @@ module.exports = function (config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['ChromeNoSandbox'],
+    browsers: ['Chrome'],
 
+    /*
     customLaunchers: {
-      ChromeNoSandbox: {
+      Chrome_Travis_CI: {
         base: 'Chrome',
         flags: ['--no-sandbox']
       }
     },
+    */
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -88,7 +90,7 @@ module.exports = function (config) {
   };
 
   if (process.env.TRAVIS) {
-    configuration.browsers = ['ChromeNoSandbox'];
+    configuration.browsers = ['PhantomJS'];
   }
 
   config.set(configuration);
