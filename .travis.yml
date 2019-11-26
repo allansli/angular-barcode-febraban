@@ -7,4 +7,3 @@ before_script:
   - npm install
 script: node_modules/karma/bin/karma start karma.conf.js --single-run
 after_script: "cat ./coverage/lcov-report/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
-
