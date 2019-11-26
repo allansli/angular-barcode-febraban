@@ -41,3 +41,4 @@ Use the directive as example below:
 ```html
 <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
 ```
+THANKS!
