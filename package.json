@@ -1,6 +1,6 @@
 {
   "name": "angular-barcode-febraban",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Angular Directive to Render Interleaved 2 of 5 Barcode",
   "scripts": {
     "test": "test"
