@@ -1,44 +1,155 @@
-# angular-barcode-febraban
-[![npm version](https://img.shields.io/npm/v/angular-barcode-febraban.svg)](https://www.npmjs.com/package/angular-barcode-febraban)
-[![Package Quality](http://npm.packagequality.com/shield/angular-barcode-febraban.svg)](http://packagequality.com/#?package=angular-barcode-febraban)
-[![Build Status](https://travis-ci.org/allansli/angular-barcode-febraban.svg?branch=develop)](https://travis-ci.org/allansli/angular-barcode-febraban)
-[![Coverage Status](https://coveralls.io/repos/github/allansli/angular-barcode-febraban/badge.svg?branch=master)](https://coveralls.io/github/allansli/angular-barcode-febraban?branch=master)
-[![NPM Downloads](https://img.shields.io/npm/dt/angular-barcode-febraban.svg)](https://www.npmjs.com/package/angular-barcode-febraban)
-[![dependencies](https://david-dm.org/allansli/angular-barcode-febraban/status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
-[![devDependencies](https://david-dm.org/allansli/angular-barcode-febraban/dev-status.svg)](https://david-dm.org/allansli/angular-barcode-febraban)
+# barcode-febraban
 
-Angular Directive to Render Interleaved 2 of 5 (ITF) Barcode.
+Monorepo for **ITF (Interleaved 2 of 5)** barcode libraries targeting multiple frontend frameworks — built for Brazilian **FEBRABAN** banking standards (boleto bancário).
 
- * ITF barcode rendered as text;
- * No images;
- * No http requests;
- * No 3rd party library dependencies (except for `angular` itself);
+The barcode is rendered as text using the `BarcodeInterleaved2of5` font: **no images, no HTTP requests, no SVG**.
 
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
+---
 
-[![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/badge.svg?style=beer-square)](https://beerpay.io/allansli/angular-barcode-febraban)  [![Beerpay](https://beerpay.io/allansli/angular-barcode-febraban/make-wish.svg?style=flat-square)](https://beerpay.io/allansli/angular-barcode-febraban?focus=wish)
+## Packages
 
-## Usage
+| Package | Version | Description |
+|---|---|---|
+| [`@allansli/barcode-febraban-core`](packages/core/README.md) | core | Pure JS library — framework-agnostic |
+| [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 1.1.0 | AngularJS (1.x) directive |
+| [`@allansli/react-barcode-febraban`](packages/react/README.md) | 1.0.0 | React 18+ component |
+| [`@allansli/vue-barcode-febraban`](packages/vue/README.md) | 1.0.0 | Vue 3 component |
+| [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 1.0.0 | Angular (2+) component |
 
-Install **angular-barcode-febraban** using **npm**.
-```js 
-npm install angular-barcode-febraban --save
+All framework packages consume `@allansli/barcode-febraban-core` as their engine.
+
+---
+
+## Architecture
+
+```
+barcode-febraban (monorepo)
+│
+├── packages/core           @allansli/barcode-febraban-core
+│   └── src/
+│       ├── index.js        UMD/CJS — works in browser globals, Node, AMD
+│       └── index.esm.js    ESM — for modern bundlers (Vite, Webpack, Rollup)
+│
+├── packages/angularjs      @allansli/angular-barcode-febraban
+│   └── src/
+│       ├── *.module.js     AngularJS module definition
+│       ├── *.utils.js      Angular constant — delegates to core
+│       └── *.directive.js  <ng-barcode-febraban> element directive
+│
+├── packages/react          @allansli/react-barcode-febraban
+│   └── src/
+│       └── BarcodeFebraban.jsx
+│
+├── packages/vue            @allansli/vue-barcode-febraban
+│   └── src/
+│       └── BarcodeFebraban.vue
+│
+└── packages/angular        @allansli/ng-barcode-febraban
+    └── src/
+        ├── barcode-febraban.component.ts
+        └── barcode-febraban.module.ts
 ```
 
-Include module **angular-barcode-febraban** into your app.
+---
+
+## Quick start
+
+### Core (pure JS)
+
+```bash
+npm install @allansli/barcode-febraban-core
+```
+
 ```js
-angular.module("my.app", ["angular-barcode-febraban"]);`
+import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
+const sequence = generateBarcodeSequence("1234567890");
 ```
 
-Add **script** and **css** references in html.
-```html
-<script src="../node_modules/angular-barcode-febraban/dist/angular-barcode-febraban.min.js"></script>
-<link rel="stylesheet" href="../node_modules/angular-barcode-febraban/dist/css/barcode.css" />
+### AngularJS (1.x)
+
+```bash
+npm install @allansli/angular-barcode-febraban
 ```
 
-Use the directive as example below:
 ```html
 <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
 ```
-THANKS!
+
+### React
+
+```bash
+npm install @allansli/react-barcode-febraban
+```
+
+```jsx
+import BarcodeFebraban from "@allansli/react-barcode-febraban";
+<BarcodeFebraban sequence="1234567890" />
+```
+
+### Vue 3
+
+```bash
+npm install @allansli/vue-barcode-febraban
+```
+
+```vue
+<BarcodeFebraban sequence="1234567890" />
+```
+
+### Angular (2+)
+
+```bash
+npm install @allansli/ng-barcode-febraban
+```
+
+```html
+<barcode-febraban sequence="1234567890"></barcode-febraban>
+```
+
+---
+
+## Development
+
+This is an **npm workspaces** monorepo.
+
+```bash
+# Install all dependencies
+npm install
+
+# Build all packages
+npm run build:all
+
+# Test all packages
+npm run test:all
+```
+
+---
+
+## Publishing
+
+The `scripts/publish-all.js` script streamlines publishing all packages to npm in the correct dependency order (core first).
+
+```bash
+# Dry run — see what would be published
+npm run publish:dry-run
+
+# Publish all packages
+npm run publish:all
+
+# Publish with a dist-tag (e.g., for pre-releases)
+node scripts/publish-all.js --tag next
+
+# Publish specific packages only
+node scripts/publish-all.js core react
+
+# All options
+node scripts/publish-all.js [--dry-run] [--tag <tag>] [package-key ...]
+```
+
+Package keys: `core`, `angularjs`, `react`, `vue`, `angular`.
+
+---
+
+## License
+
+MIT © Allan Martins de Paula

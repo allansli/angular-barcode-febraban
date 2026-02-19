@@ -1,53 +1,28 @@
 {
-  "name": "@allansli/angular-barcode-febraban",
-  "version": "1.0.2",
-  "description": "Angular Directive to Render Interleaved 2 of 5 Barcode",
+  "name": "barcode-febraban",
+  "private": true,
+  "description": "Monorepo for ITF (Interleaved 2 of 5) barcode libraries across multiple frameworks — FEBRABAN Brazilian banking standard",
+  "workspaces": [
+    "packages/core",
+    "packages/angularjs",
+    "packages/react",
+    "packages/vue",
+    "packages/angular"
+  ],
   "scripts": {
-    "test": "test"
+    "build:all": "npm run build --workspaces --if-present",
+    "test:all": "npm test --workspaces --if-present",
+    "publish:all": "node scripts/publish-all.js",
+    "publish:dry-run": "node scripts/publish-all.js --dry-run"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/allansli/angular-barcode-febraban.git"
   },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
-  "keywords": [
-    "barcode",
-    "angular",
-    "febraban",
-    "intercalado 2 de 5",
-    "interleaved 2 of 5",
-    "boleto",
-    "código de barras",
-    "ITF",
-    "ITF barcode",
-    "código de barras ITF"
-  ],
   "author": "Allan Martins de Paula",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/allansli/angular-barcode-febraban/issues"
   },
-  "homepage": "https://github.com/allansli/angular-barcode-febraban#readme",
-  "devDependencies": {
-    "angular-mocks": "1.7.4",
-    "coveralls": "2.11.12",
-    "del": "2.2.2",
-    "gulp": "3.9.1",
-    "gulp-concat": "2.6.0",
-    "gulp-cssmin": "0.1.7",
-    "gulp-cssnano": "2.1.2",
-    "gulp-eslint": "3.0.1",
-    "gulp-jshint": "2.0.1",
-    "gulp-uglify": "2.0.0",
-    "jasmine": "2.5.1",
-    "jshint": "2.9.3",
-    "karma": "1.3.0",
-    "karma-chrome-launcher": "2.0.0",
-    "karma-phantomjs-launcher": "1.0.4",
-    "karma-coverage": "1.1.1",
-    "karma-jasmine": "1.0.2"
-  },
-  "dependencies": {
-    "angular": "1.8.0"
-  }
+  "homepage": "https://github.com/allansli/angular-barcode-febraban#readme"
 }

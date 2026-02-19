@@ -1,0 +1,49 @@
+{
+  "name": "@allansli/barcode-febraban-core",
+  "version": "1.0.0",
+  "description": "Core pure JavaScript library for ITF (Interleaved 2 of 5) barcode generation — FEBRABAN Brazilian banking standard",
+  "main": "src/index.js",
+  "module": "src/index.esm.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.esm.js",
+      "require": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./assets/*": "./assets/*"
+  },
+  "files": [
+    "src",
+    "assets"
+  ],
+  "scripts": {
+    "test": "jest src/__tests__"
+  },
+  "keywords": [
+    "barcode",
+    "febraban",
+    "itf",
+    "interleaved-2-of-5",
+    "boleto",
+    "core",
+    "pure-js",
+    "codigo-de-barras"
+  ],
+  "author": "Allan Martins de Paula",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allansli/angular-barcode-febraban.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/allansli/angular-barcode-febraban/issues"
+  },
+  "homepage": "https://github.com/allansli/angular-barcode-febraban/tree/master/packages/core#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

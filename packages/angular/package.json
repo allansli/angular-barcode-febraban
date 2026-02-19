@@ -1,0 +1,59 @@
+{
+  "name": "@allansli/ng-barcode-febraban",
+  "version": "1.0.0",
+  "description": "Angular (2+) component to render ITF (Interleaved 2 of 5) barcodes — FEBRABAN Brazilian banking standard",
+  "main": "dist/esm2022/ng-barcode-febraban.mjs",
+  "module": "dist/esm2022/ng-barcode-febraban.mjs",
+  "typings": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/esm2022/ng-barcode-febraban.mjs",
+      "default": "./dist/esm2022/ng-barcode-febraban.mjs"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json"
+  },
+  "keywords": [
+    "barcode",
+    "angular",
+    "ng",
+    "febraban",
+    "interleaved-2-of-5",
+    "boleto",
+    "itf",
+    "codigo-de-barras"
+  ],
+  "author": "Allan Martins de Paula",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allansli/angular-barcode-febraban.git",
+    "directory": "packages/angular"
+  },
+  "bugs": {
+    "url": "https://github.com/allansli/angular-barcode-febraban/issues"
+  },
+  "homepage": "https://github.com/allansli/angular-barcode-febraban/tree/master/packages/angular#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=15.0.0",
+    "@angular/core": ">=15.0.0"
+  },
+  "dependencies": {
+    "@allansli/barcode-febraban-core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@angular/compiler": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/common": "^17.0.0",
+    "ng-packagr": "^17.0.0",
+    "typescript": "^5.2.0"
+  }
+}
