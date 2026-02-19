@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>React Demo — barcode-febraban</title>
+
+  <!-- Barcode font -->
+  <link rel="stylesheet" href="../packages/core/assets/css/barcode.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .page { max-width: 760px; margin: 0 auto; }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 36px;
+      transition: color 0.15s;
+    }
+    .back:hover { color: #e2e8f0; }
+
+    .header { margin-bottom: 36px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(97,218,251,0.12);
+      color: #61dafb;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; }
+
+    .demo-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .code-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #334155;
+      background: #162032;
+    }
+
+    .code-header span { font-size: 0.8rem; color: #64748b; }
+    .code-header .filename { font-family: 'Menlo', 'Consolas', monospace; color: #94a3b8; }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+    }
+
+    .kw  { color: #f472b6; }
+    .str { color: #86efac; }
+    .cmt { color: #475569; font-style: italic; }
+    .tag { color: #60a5fa; }
+    .atr { color: #fbbf24; }
+    .fn  { color: #c084fc; }
+    .tp  { color: #38bdf8; }
+
+    .info-card {
+      background: rgba(97,218,251,0.06);
+      border: 1px solid rgba(97,218,251,0.18);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .info-card strong { color: #61dafb; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <a class="back" href="index.html">← All demos</a>
+
+    <div class="header">
+      <div class="badge">React 18+</div>
+      <h1>React Demo</h1>
+      <p class="subtitle">
+        The <code>&lt;BarcodeFebraban&gt;</code> component re-renders instantly as the
+        controlled input state changes via the <code>useState</code> hook.
+      </p>
+    </div>
+
+    <!-- React mounts here -->
+    <div class="demo-card" id="root"></div>
+
+    <!-- Usage: component -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">App.jsx</span>
+        <span>Component usage</span>
+      </div>
+      <pre><span class="kw">import</span> { useState } <span class="kw">from</span> <span class="str">"react"</span>;
+<span class="kw">import</span> BarcodeFebraban <span class="kw">from</span> <span class="str">"@allansli/react-barcode-febraban"</span>;
+<span class="kw">import</span> <span class="str">"@allansli/barcode-febraban-core/assets/css/barcode.css"</span>;
+
+<span class="kw">export default function</span> <span class="fn">App</span>() {
+  <span class="kw">const</span> [sequence, setSequence] = <span class="fn">useState</span>(<span class="str">"1234567890"</span>);
+
+  <span class="kw">return</span> (
+    <span class="tag">&lt;div&gt;</span>
+      <span class="tag">&lt;input</span>
+        <span class="atr">value</span>={sequence}
+        <span class="atr">onChange</span>={e => <span class="fn">setSequence</span>(e.target.value)}
+      <span class="tag">/&gt;</span>
+      <span class="tag">&lt;BarcodeFebraban</span> <span class="atr">sequence</span>={sequence} <span class="tag">/&gt;</span>
+    <span class="tag">&lt;/div&gt;</span>
+  );
+}</pre>
+    </div>
+
+    <!-- Usage: props -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">Props</span>
+        <span>Component API</span>
+      </div>
+      <pre><span class="cmt">// All props</span>
+<span class="tag">&lt;BarcodeFebraban</span>
+  <span class="atr">sequence</span>=<span class="str">"1234567890"</span>   <span class="cmt">// string | number  (required)</span>
+  <span class="atr">className</span>=<span class="str">"my-class"</span>   <span class="cmt">// string           (optional extra CSS class)</span>
+  <span class="atr">style</span>={{ color: <span class="str">"#000"</span> }} <span class="cmt">// object           (optional inline styles)</span>
+<span class="tag">/&gt;</span></pre>
+    </div>
+
+    <div class="info-card">
+      <strong>How it works:</strong> On each render, the component calls
+      <code>generateBarcodeSequence(String(sequence))</code> from
+      <code>@allansli/barcode-febraban-core</code>. The result is placed inside a
+      <code>&lt;div className="barcodei2of5"&gt;</code> which the
+      <code>BarcodeInterleaved2of5</code> font renders as a visual barcode.
+      Invalid or odd-length inputs render as an empty barcode.
+    </div>
+  </div>
+
+  <!-- Core UMD — exposes barcodeFebrabanCore global -->
+  <script src="../packages/core/src/index.js"></script>
+  <!-- React 18 + ReactDOM (development UMD builds) -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <!-- Babel standalone — compiles JSX in the browser for this demo -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    // ---------------------------------------------------------------------------
+    // BarcodeFebraban component
+    // In a real project this is imported from @allansli/react-barcode-febraban.
+    // Here we define it inline, using the barcodeFebrabanCore global (UMD build).
+    // ---------------------------------------------------------------------------
+    function BarcodeFebraban({ sequence, className, style }) {
+      const seq = sequence !== undefined && sequence !== null ? String(sequence) : "";
+      const isValid = seq.length > 0 && !isNaN(Number(seq));
+      const barcodeSequence = isValid
+        ? barcodeFebrabanCore.generateBarcodeSequence(seq)
+        : "";
+      const cls = "barcodei2of5" + (className ? " " + className : "");
+      return <div className={cls} style={style}>{barcodeSequence}</div>;
+    }
+
+    // ---------------------------------------------------------------------------
+    // Demo App
+    // ---------------------------------------------------------------------------
+    function App() {
+      const [sequence, setSequence] = React.useState("1234567890");
+      const isValid = sequence.length > 0 && !isNaN(Number(sequence));
+
+      return (
+        <div>
+          <label style={{
+            display: "block",
+            fontSize: "0.8rem",
+            fontWeight: 600,
+            color: "#94a3b8",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            marginBottom: 10
+          }}>
+            Barcode Sequence
+          </label>
+
+          <div style={{ display: "flex", gap: 12, marginBottom: 28 }}>
+            <input
+              type="text"
+              value={sequence}
+              onChange={e => setSequence(e.target.value)}
+              placeholder="Enter numeric sequence (even length)"
+              maxLength={44}
+              style={{
+                flex: 1,
+                background: "#0f172a",
+                border: "1px solid " + (document.activeElement === document.querySelector("input") ? "#61dafb" : "#334155"),
+                borderRadius: 10,
+                padding: "12px 16px",
+                color: "#e2e8f0",
+                fontSize: "1rem",
+                fontFamily: "Menlo, Consolas, monospace",
+                outline: "none"
+              }}
+            />
+          </div>
+
+          <label style={{
+            display: "block",
+            fontSize: "0.8rem",
+            fontWeight: 600,
+            color: "#94a3b8",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            marginBottom: 10
+          }}>
+            Rendered Barcode
+          </label>
+
+          <div style={{
+            background: "#f8fafc",
+            borderRadius: 10,
+            padding: 24,
+            textAlign: "center",
+            minHeight: 110,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center"
+          }}>
+            {sequence && isValid ? (
+              <BarcodeFebraban
+                sequence={sequence}
+                style={{ fontSize: 100, lineHeight: 1, color: "#0f172a" }}
+              />
+            ) : (
+              <span style={{ color: "#94a3b8", fontSize: "0.875rem" }}>
+                {sequence ? "Sequence must be numeric and even-length" : "Type a numeric sequence above"}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>

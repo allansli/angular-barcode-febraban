@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AngularJS Demo — barcode-febraban</title>
+
+  <!-- Barcode font -->
+  <link rel="stylesheet" href="../packages/core/assets/css/barcode.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .page { max-width: 760px; margin: 0 auto; }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 36px;
+      transition: color 0.15s;
+    }
+    .back:hover { color: #e2e8f0; }
+
+    .header { margin-bottom: 36px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(226,50,55,0.15);
+      color: #e23237;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; }
+
+    /* Demo card */
+    .demo-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .demo-card label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .input-row input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      font-family: 'Menlo', 'Consolas', monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .input-row input:focus { border-color: #e23237; }
+
+    .barcode-display {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Override font size for demo display */
+    .barcode-display .barcodei2of5 {
+      font-size: 100px;
+      line-height: 1;
+      color: #0f172a;
+    }
+
+    .empty-hint {
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+
+    /* Code section */
+    .code-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #334155;
+      background: #162032;
+    }
+
+    .code-header span { font-size: 0.8rem; color: #64748b; }
+
+    .code-header .filename {
+      font-family: 'Menlo', 'Consolas', monospace;
+      color: #94a3b8;
+    }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+    }
+
+    .kw  { color: #f472b6; }
+    .str { color: #86efac; }
+    .cmt { color: #475569; font-style: italic; }
+    .tag { color: #60a5fa; }
+    .atr { color: #fbbf24; }
+    .val { color: #86efac; }
+
+    .info-card {
+      background: rgba(226,50,55,0.07);
+      border: 1px solid rgba(226,50,55,0.2);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .info-card strong { color: #e23237; }
+  </style>
+</head>
+<body ng-app="barcode-demo">
+
+  <div class="page">
+    <a class="back" href="index.html">← All demos</a>
+
+    <div class="header">
+      <div class="badge">AngularJS 1.x</div>
+      <h1>AngularJS Demo</h1>
+      <p class="subtitle">
+        The <code>&lt;ng-barcode-febraban&gt;</code> directive renders an ITF barcode
+        in real-time as you type, using two-way <code>ng-model</code> binding.
+      </p>
+    </div>
+
+    <!-- Live demo -->
+    <div class="demo-card" ng-controller="BarcodeDemoController as vm">
+      <label>Barcode Sequence</label>
+      <div class="input-row">
+        <input
+          type="text"
+          ng-model="vm.sequence"
+          placeholder="Enter numeric sequence (even length)"
+          maxlength="44"
+        />
+      </div>
+
+      <label>Rendered Barcode</label>
+      <div class="barcode-display">
+        <span class="empty-hint" ng-if="!vm.sequence">Type a numeric sequence above</span>
+        <ng-barcode-febraban
+          ng-if="vm.sequence"
+          barcode-sequence="{{vm.sequence}}"
+        ></ng-barcode-febraban>
+      </div>
+    </div>
+
+    <!-- Usage: module setup -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">app.js</span>
+        <span>Module setup</span>
+      </div>
+      <pre><span class="cmt">// 1. Install</span>
+<span class="cmt">// npm install @allansli/angular-barcode-febraban</span>
+
+<span class="cmt">// 2. Add script + CSS to HTML</span>
+<span class="cmt">// &lt;script src="node_modules/@allansli/angular-barcode-febraban/dist/angular-barcode-febraban.min.js"&gt;&lt;/script&gt;</span>
+<span class="cmt">// &lt;link rel="stylesheet" href="node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css" /&gt;</span>
+
+<span class="cmt">// 3. Declare dependency</span>
+angular.module(<span class="str">"myApp"</span>, [<span class="str">"angular-barcode-febraban"</span>]);</pre>
+    </div>
+
+    <!-- Usage: template -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">template.html</span>
+        <span>Directive usage</span>
+      </div>
+      <pre><span class="cmt">&lt;!-- Static --&gt;</span>
+<span class="tag">&lt;ng-barcode-febraban</span>
+  <span class="atr">barcode-sequence</span>=<span class="val">"1234567890"</span>
+<span class="tag">&gt;&lt;/ng-barcode-febraban&gt;</span>
+
+<span class="cmt">&lt;!-- Dynamic — re-renders on every input change --&gt;</span>
+<span class="tag">&lt;input</span> <span class="atr">type</span>=<span class="val">"text"</span> <span class="atr">ng-model</span>=<span class="val">"vm.sequence"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;ng-barcode-febraban</span>
+  <span class="atr">barcode-sequence</span>=<span class="val">"{{vm.sequence}}"</span>
+<span class="tag">&gt;&lt;/ng-barcode-febraban&gt;</span></pre>
+    </div>
+
+    <div class="info-card">
+      <strong>How it works:</strong> The directive observes the <code>barcode-sequence</code>
+      attribute via <code>attrs.$observe</code>. On each change it calls
+      <code>barcodeFebrabanCore.generateBarcodeSequence()</code> which maps every 2-digit
+      pair to a character code in the <code>BarcodeInterleaved2of5</code> font.
+      The result is set on the scope and rendered inside a <code>.barcodei2of5</code> div.
+    </div>
+  </div>
+
+  <!-- Core library (UMD) — sets barcodeFebrabanCore global -->
+  <script src="../packages/core/src/index.js"></script>
+  <!-- AngularJS from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+  <!-- Package source files (in dependency order) -->
+  <script src="../packages/angularjs/src/angular-barcode-febraban.module.js"></script>
+  <script src="../packages/angularjs/src/angular-barcode-febraban.utils.js"></script>
+  <script src="../packages/angularjs/src/angular-barcode-febraban.directive.js"></script>
+  <!-- Demo app -->
+  <script>
+    (function () {
+      "use strict";
+      angular.module("barcode-demo", ["angular-barcode-febraban"]);
+
+      angular.module("barcode-demo").controller("BarcodeDemoController", function () {
+        this.sequence = "1234567890";
+      });
+    })();
+  </script>
+
+</body>
+</html>

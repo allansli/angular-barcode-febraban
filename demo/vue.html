@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vue 3 Demo — barcode-febraban</title>
+
+  <!-- Barcode font -->
+  <link rel="stylesheet" href="../packages/core/assets/css/barcode.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .page { max-width: 760px; margin: 0 auto; }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 36px;
+      transition: color 0.15s;
+    }
+    .back:hover { color: #e2e8f0; }
+
+    .header { margin-bottom: 36px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(66,184,131,0.15);
+      color: #42b883;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; }
+
+    .demo-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .demo-card label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .input-row { display: flex; gap: 12px; margin-bottom: 28px; }
+
+    .input-row input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      font-family: 'Menlo', 'Consolas', monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .input-row input:focus { border-color: #42b883; }
+
+    .barcode-display {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .barcode-display .barcodei2of5 {
+      font-size: 100px;
+      line-height: 1;
+      color: #0f172a;
+    }
+
+    .empty-hint {
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+
+    .code-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #334155;
+      background: #162032;
+    }
+
+    .code-header span { font-size: 0.8rem; color: #64748b; }
+    .code-header .filename { font-family: 'Menlo', 'Consolas', monospace; color: #94a3b8; }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+    }
+
+    .kw  { color: #f472b6; }
+    .str { color: #86efac; }
+    .cmt { color: #475569; font-style: italic; }
+    .tag { color: #60a5fa; }
+    .atr { color: #fbbf24; }
+    .fn  { color: #c084fc; }
+
+    .info-card {
+      background: rgba(66,184,131,0.07);
+      border: 1px solid rgba(66,184,131,0.2);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .info-card strong { color: #42b883; }
+  </style>
+</head>
+<body>
+
+  <div class="page" id="app">
+    <a class="back" href="index.html">← All demos</a>
+
+    <div class="header">
+      <div class="badge">Vue 3</div>
+      <h1>Vue 3 Demo</h1>
+      <p class="subtitle">
+        The <code>BarcodeFebraban</code> component re-renders reactively as
+        <code>v-model</code> updates the sequence via the Composition API.
+      </p>
+    </div>
+
+    <!-- Live demo -->
+    <div class="demo-card">
+      <label>Barcode Sequence</label>
+      <div class="input-row">
+        <input
+          v-model="sequence"
+          type="text"
+          placeholder="Enter numeric sequence (even length)"
+          maxlength="44"
+        />
+      </div>
+
+      <label>Rendered Barcode</label>
+      <div class="barcode-display">
+        <span class="empty-hint" v-if="!sequence">Type a numeric sequence above</span>
+        <span class="empty-hint" v-else-if="!isValid">Sequence must be numeric and even-length</span>
+        <barcode-febraban v-else :sequence="sequence"></barcode-febraban>
+      </div>
+    </div>
+
+    <!-- Usage: SFC -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">App.vue</span>
+        <span>Component usage</span>
+      </div>
+      <pre><span class="tag">&lt;template&gt;</span>
+  <span class="tag">&lt;div&gt;</span>
+    <span class="tag">&lt;input</span> <span class="atr">v-model</span>=<span class="str">"sequence"</span> <span class="tag">/&gt;</span>
+    <span class="tag">&lt;BarcodeFebraban</span> <span class="atr">:sequence</span>=<span class="str">"sequence"</span> <span class="tag">/&gt;</span>
+  <span class="tag">&lt;/div&gt;</span>
+<span class="tag">&lt;/template&gt;</span>
+
+<span class="tag">&lt;script setup&gt;</span>
+<span class="kw">import</span> { ref } <span class="kw">from</span> <span class="str">"vue"</span>;
+<span class="kw">import</span> { BarcodeFebraban } <span class="kw">from</span> <span class="str">"@allansli/vue-barcode-febraban"</span>;
+<span class="kw">import</span> <span class="str">"@allansli/barcode-febraban-core/assets/css/barcode.css"</span>;
+
+<span class="kw">const</span> sequence = <span class="fn">ref</span>(<span class="str">"1234567890"</span>);
+<span class="tag">&lt;/script&gt;</span></pre>
+    </div>
+
+    <!-- Usage: plugin -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">main.js</span>
+        <span>Global plugin registration</span>
+      </div>
+      <pre><span class="kw">import</span> { createApp } <span class="kw">from</span> <span class="str">"vue"</span>;
+<span class="kw">import</span> App <span class="kw">from</span> <span class="str">"./App.vue"</span>;
+<span class="kw">import</span> { BarcodeFebrabanPlugin } <span class="kw">from</span> <span class="str">"@allansli/vue-barcode-febraban"</span>;
+<span class="kw">import</span> <span class="str">"@allansli/barcode-febraban-core/assets/css/barcode.css"</span>;
+
+<span class="fn">createApp</span>(App)
+  .<span class="fn">use</span>(BarcodeFebrabanPlugin) <span class="cmt">// registers &lt;BarcodeFebraban&gt; globally</span>
+  .<span class="fn">mount</span>(<span class="str">"#app"</span>);</pre>
+    </div>
+
+    <div class="info-card">
+      <strong>How it works:</strong> The SFC uses a <code>computed</code> property that calls
+      <code>generateBarcodeSequence()</code> from <code>@allansli/barcode-febraban-core</code>
+      whenever the <code>sequence</code> prop changes. Vue's reactivity system ensures the
+      barcode re-renders automatically. The plugin installer registers the component globally
+      so you can use <code>&lt;BarcodeFebraban&gt;</code> in any template without importing it.
+    </div>
+  </div>
+
+  <!-- Core UMD — sets barcodeFebrabanCore global -->
+  <script src="../packages/core/src/index.js"></script>
+  <!-- Vue 3 global build from CDN -->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <script>
+    // BarcodeFebraban component
+    // In a real project: import { BarcodeFebraban } from "@allansli/vue-barcode-febraban"
+    // Here we define it inline using the barcodeFebrabanCore global (UMD build).
+    const BarcodeFebrabanComponent = {
+      name: "BarcodeFebraban",
+      props: {
+        sequence: { type: [String, Number], default: "" }
+      },
+      computed: {
+        barcodeSequence() {
+          var seq = this.sequence !== null && this.sequence !== undefined
+            ? String(this.sequence) : "";
+          var isValid = seq.length > 0 && !isNaN(Number(seq));
+          return isValid ? barcodeFebrabanCore.generateBarcodeSequence(seq) : "";
+        }
+      },
+      template: '<div class="barcodei2of5" style="font-size:100px;line-height:1;color:#0f172a">{{ barcodeSequence }}</div>'
+    };
+
+    const { createApp, ref, computed } = Vue;
+
+    createApp({
+      components: { "barcode-febraban": BarcodeFebrabanComponent },
+      setup() {
+        const sequence = ref("1234567890");
+        const isValid = computed(() => {
+          var seq = String(sequence.value);
+          return seq.length > 0 && !isNaN(Number(seq));
+        });
+        return { sequence, isValid };
+      }
+    }).mount("#app");
+  </script>
+
+</body>
+</html>
