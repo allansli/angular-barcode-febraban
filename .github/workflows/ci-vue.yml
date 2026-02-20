@@ -1,0 +1,103 @@
+name: Vue Package CI/CD
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+    paths:
+      - "packages/vue/**"
+      - ".github/workflows/ci-vue.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/vue/**"
+  release:
+    types: [published]
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CI — build (Vite) to verify the bundle compiles cleanly
+  # Skip entirely when an unrelated release fires (e.g. core@v*)
+  # ─────────────────────────────────────────────────────────────────────────────
+  ci:
+    name: Build
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'release' ||
+      startsWith(github.event.release.tag_name, 'vue@v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Vite)
+        run: npm run build
+        working-directory: packages/vue
+
+      - name: Verify dist output
+        run: |
+          echo "=== dist/ contents ==="
+          ls -lh dist/
+          echo "=== ES module entry (first 5 lines) ==="
+          head -5 dist/index.es.js
+          echo "=== CJS entry (first 5 lines) ==="
+          head -5 dist/index.cjs.js
+        working-directory: packages/vue
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Publish — runs only when a GitHub Release is published with a vue@v* tag
+  #
+  # How to publish:
+  #   1. Bump "version" in packages/vue/package.json and push to main.
+  #   2. On GitHub, create a Release with tag  vue@v<version>
+  #      (e.g.  vue@v1.0.1).  Click "Publish release".
+  #   3. This job rebuilds the Vite bundles (ES + CJS) and publishes
+  #      @allansli/vue-barcode-febraban to npm.
+  #
+  # Required repository secret: NPM_TOKEN
+  # ─────────────────────────────────────────────────────────────────────────────
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      startsWith(github.event.release.tag_name, 'vue@v')
+
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Vite)
+        # Produces dist/index.es.js (ESM) and dist/index.cjs.js (CJS)
+        run: npm run build
+        working-directory: packages/vue
+
+      - name: Publish @allansli/vue-barcode-febraban
+        run: npm publish --access public --provenance
+        working-directory: packages/vue
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,88 @@
+name: Core Package CI/CD
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+    paths:
+      - "packages/core/**"
+      - ".github/workflows/ci-core.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/core/**"
+  release:
+    types: [published]
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CI — runs on every push / PR, and on release (to gate publish)
+  # Skip entirely when an unrelated release fires (e.g. react@v*)
+  # ─────────────────────────────────────────────────────────────────────────────
+  ci:
+    name: Test
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'release' ||
+      startsWith(github.event.release.tag_name, 'core@v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+        working-directory: packages/core
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Publish — runs only when a GitHub Release is published with a core@v* tag
+  #
+  # How to publish:
+  #   1. Bump "version" in packages/core/package.json and push to main.
+  #   2. On GitHub, create a Release and set the tag to  core@v<version>
+  #      (e.g.  core@v1.0.1).  Click "Publish release".
+  #   3. This job will build and publish @allansli/barcode-febraban-core to npm.
+  #
+  # Required repository secret: NPM_TOKEN
+  # ─────────────────────────────────────────────────────────────────────────────
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      startsWith(github.event.release.tag_name, 'core@v')
+
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      # core has no build step — source files are published directly
+      - name: Publish @allansli/barcode-febraban-core
+        run: npm publish --access public --provenance
+        working-directory: packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

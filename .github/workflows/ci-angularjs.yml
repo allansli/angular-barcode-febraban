@@ -1,0 +1,106 @@
+name: AngularJS Package CI/CD
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+    paths:
+      - "packages/angularjs/**"
+      - ".github/workflows/ci-angularjs.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/angularjs/**"
+  release:
+    types: [published]
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CI — lint, build (Gulp 3), test (Karma + Chrome)
+  # Skip entirely when an unrelated release fires (e.g. react@v*)
+  # ─────────────────────────────────────────────────────────────────────────────
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'release' ||
+      startsWith(github.event.release.tag_name, 'angularjs@v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Gulp 3.x has known issues with Node >= 20; use Node 18 for compatibility
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Gulp)
+        run: npm run build
+        working-directory: packages/angularjs
+
+      # Karma needs a real (or headless) browser. The runner ships Chrome;
+      # xvfb-run provides a virtual display so Chrome can open a window.
+      # CHROME_BIN tells karma-chrome-launcher where Chrome is.
+      - name: Test (Karma + Chrome headless via Xvfb)
+        run: >
+          xvfb-run --auto-servernum
+          node_modules/.bin/karma start karma.conf.js --single-run
+        working-directory: packages/angularjs
+        env:
+          CHROME_BIN: google-chrome-stable
+          # Force ChromeHeadless so the browser does not need a GUI
+          CHROMIUM_FLAGS: "--headless --no-sandbox --disable-gpu --disable-dev-shm-usage"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Publish — runs only when a GitHub Release is published with angularjs@v* tag
+  #
+  # How to publish:
+  #   1. Bump "version" in packages/angularjs/package.json and push to main.
+  #   2. On GitHub, create a Release with tag  angularjs@v<version>
+  #      (e.g.  angularjs@v1.1.1).  Click "Publish release".
+  #   3. This job builds the dist bundle and publishes
+  #      @allansli/angular-barcode-febraban to npm.
+  #
+  # Required repository secret: NPM_TOKEN
+  # ─────────────────────────────────────────────────────────────────────────────
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      startsWith(github.event.release.tag_name, 'angularjs@v')
+
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Gulp)
+        run: npm run build
+        working-directory: packages/angularjs
+
+      - name: Publish @allansli/angular-barcode-febraban
+        run: npm publish --access public --provenance
+        working-directory: packages/angularjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

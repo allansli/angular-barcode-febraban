@@ -1,0 +1,106 @@
+name: Angular Package CI/CD
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+    paths:
+      - "packages/angular/**"
+      - ".github/workflows/ci-angular.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/angular/**"
+  release:
+    types: [published]
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # CI — build with ng-packagr to verify the Angular library compiles cleanly
+  # Skip entirely when an unrelated release fires (e.g. core@v*)
+  # ─────────────────────────────────────────────────────────────────────────────
+  ci:
+    name: Build
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'release' ||
+      startsWith(github.event.release.tag_name, 'angular@v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        # Workspace install resolves @allansli/barcode-febraban-core as a local symlink
+        run: npm ci
+
+      - name: Build (ng-packagr)
+        # Compiles TypeScript, runs ngc, generates FESM / ESM2022 bundles + d.ts
+        run: npm run build
+        working-directory: packages/angular
+
+      - name: Verify dist output
+        run: |
+          echo "=== dist/ contents ==="
+          ls -lh dist/
+          echo "=== ESM2022 entry (first 5 lines) ==="
+          head -5 dist/esm2022/ng-barcode-febraban.mjs
+          echo "=== Type declarations (first 10 lines) ==="
+          head -10 dist/index.d.ts
+        working-directory: packages/angular
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Publish — runs only when a GitHub Release is published with an angular@v* tag
+  #
+  # How to publish:
+  #   1. Bump "version" in packages/angular/package.json and push to main.
+  #   2. On GitHub, create a Release with tag  angular@v<version>
+  #      (e.g.  angular@v1.0.1).  Click "Publish release".
+  #   3. This job runs ng-packagr to build the FESM bundles and publishes
+  #      @allansli/ng-barcode-febraban to npm.
+  #
+  # Required repository secret: NPM_TOKEN
+  # ─────────────────────────────────────────────────────────────────────────────
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      startsWith(github.event.release.tag_name, 'angular@v')
+
+    permissions:
+      contents: read
+      id-token: write   # for npm provenance
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (ng-packagr)
+        # Produces dist/esm2022/ bundles + type declarations
+        run: npm run build
+        working-directory: packages/angular
+
+      - name: Publish @allansli/ng-barcode-febraban
+        # ng-packagr places the publishable package.json in dist/
+        run: npm publish dist/ --access public --provenance
+        working-directory: packages/angular
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
