@@ -1,0 +1,156 @@
+name: Claude PR Review
+
+# Triggered whenever a PR is opened, updated, or re-opened.
+# Claude reads the diff and posts (or refreshes) a single review comment.
+#
+# Required repository secret:
+#   ANTHROPIC_API_KEY — create at https://console.anthropic.com/settings/keys
+#
+# Note: this workflow uses the `pull_request` event, which does NOT expose
+# secrets to PRs coming from forks (GitHub security model). In that case
+# the script posts a polite notice instead of a review.
+# If you want full reviews on fork PRs, switch the event to
+# `pull_request_target` and read the security implications carefully.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  claude-review:
+    name: Claude Code Review
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read        # checkout + git diff
+      pull-requests: write  # post / delete PR comments
+
+    steps:
+      # ── 1. Checkout with full history so git diff works ─────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── 2. Fetch base branch so the 3-dot diff has both sides ───────────────
+      - name: Fetch base branch
+        run: git fetch origin ${{ github.base_ref }} --depth=50
+
+      # ── 3. Build diff + file list; write to /tmp to avoid shell quoting hell ─
+      - name: Collect PR metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "🔍 Generating diff (base: ${{ github.base_ref }}, head: ${{ github.head_ref }})"
+
+          # 3-dot diff = changes introduced by this PR branch relative to base.
+          # Exclude lock files, minified bundles, and generated dist artefacts.
+          git diff "origin/${{ github.base_ref }}...HEAD" \
+            -- . \
+            ':(exclude)*.lock' \
+            ':(exclude)package-lock.json' \
+            ':(exclude)yarn.lock' \
+            ':(exclude)pnpm-lock.yaml' \
+            ':(exclude)*.min.js' \
+            ':(exclude)*.min.css' \
+            ':(exclude)dist/**' \
+            ':(exclude)coverage/**' \
+            > /tmp/pr_diff.txt 2>/dev/null || true
+
+          echo "📄 Diff size: $(wc -c < /tmp/pr_diff.txt) bytes"
+
+          # List changed files
+          gh pr view ${{ github.event.pull_request.number }} \
+            --json files \
+            --jq '[.files[].path] | join("\n")' \
+            > /tmp/changed_files.txt 2>/dev/null \
+          || git diff --name-only "origin/${{ github.base_ref }}...HEAD" \
+            > /tmp/changed_files.txt 2>/dev/null \
+          || true
+
+          echo "📁 Changed files:"
+          cat /tmp/changed_files.txt
+
+      # ── 4. Call Claude API and write review to /tmp/claude_review.txt ────────
+      - name: Run Claude review
+        id: claude
+        continue-on-error: true   # post a fallback comment if this fails
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          PR_TITLE:   ${{ github.event.pull_request.title }}
+          PR_BODY:    ${{ github.event.pull_request.body }}
+          PR_AUTHOR:  ${{ github.event.pull_request.user.login }}
+          BASE_REF:   ${{ github.base_ref }}
+          HEAD_REF:   ${{ github.head_ref }}
+        run: |
+          python3 .github/scripts/claude_review.py \
+            /tmp/pr_diff.txt \
+            /tmp/changed_files.txt \
+            > /tmp/claude_review.txt
+
+      # ── 5. Delete any previous Claude comment, then post the new one ─────────
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require("fs");
+            const { owner, repo } = context.repo;
+            const pr_number = context.payload.pull_request.number;
+            const sha = context.payload.pull_request.head.sha.slice(0, 7);
+
+            // Unique marker so we can find and replace the comment on updates
+            const BOT_MARKER = "<!-- claude-pr-review-bot -->";
+
+            // ── Build review body ────────────────────────────────────────────
+            let reviewContent;
+            const outcome = "${{ steps.claude.outcome }}";
+
+            if (outcome === "success") {
+              reviewContent = fs.readFileSync("/tmp/claude_review.txt", "utf8").trim();
+            } else {
+              reviewContent = [
+                "> [!WARNING]",
+                "> Claude could not complete the review for this update.",
+                "> Check the [workflow run](" +
+                  `https://github.com/${owner}/${repo}/actions/runs/${{ github.run_id }}` +
+                  ") for details.",
+              ].join("\n");
+            }
+
+            const body = [
+              BOT_MARKER,
+              "## 🤖 Claude Code Review",
+              `> Reviewing \`${sha}\` — ${new Date().toUTCString()}`,
+              "",
+              reviewContent,
+              "",
+              "---",
+              "<sub>Generated by [Claude](https://claude.ai) via GitHub Actions · " +
+                `[Workflow run](https://github.com/${owner}/${repo}/actions/runs/${{ github.run_id }})</sub>`,
+            ].join("\n");
+
+            // ── Delete previous Claude comment (keep PR clean on updates) ────
+            let page = 1;
+            while (true) {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner, repo, issue_number: pr_number, per_page: 100, page,
+              });
+              if (comments.length === 0) break;
+              for (const c of comments) {
+                if (c.body && c.body.startsWith(BOT_MARKER)) {
+                  await github.rest.issues.deleteComment({
+                    owner, repo, comment_id: c.id,
+                  });
+                  console.log(`Deleted previous review comment ${c.id}`);
+                }
+              }
+              if (comments.length < 100) break;
+              page++;
+            }
+
+            // ── Post new review ───────────────────────────────────────────────
+            const { data: comment } = await github.rest.issues.createComment({
+              owner, repo, issue_number: pr_number, body,
+            });
+            console.log(`Posted review comment: ${comment.html_url}`);
