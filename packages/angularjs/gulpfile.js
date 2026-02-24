@@ -1,41 +1,31 @@
-var gulp = require("gulp");
-var concat = require("gulp-concat");
-var jshint = require("gulp-jshint");
-var uglify = require("gulp-uglify");
-var del = require("del");
-var cssmin = require("gulp-cssmin");
-var Server = require("karma").Server;
+"use strict";
+
+const fs     = require("fs");
+const gulp   = require("gulp");
+const concat = require("gulp-concat");
+const jshint = require("gulp-jshint");
+const uglify = require("gulp-uglify");
+const cssmin = require("gulp-cssmin");
 
 // Core library UMD build — concatenated first so barcodeFebrabanCore
 // global is available to the AngularJS source files.
-var CORE_SRC = "node_modules/@allansli/barcode-febraban-core/src/index.js";
+const CORE_SRC = "node_modules/@allansli/barcode-febraban-core/src/index.js";
 
-gulp.task("test", function (done) {
-  new Server({
-    configFile: __dirname + "/karma.conf.js",
-    singleRun: true
-  }, done).start();
-});
+function clean(done) {
+  fs.rmSync("dist", { recursive: true, force: true });
+  done();
+}
 
-gulp.task("lint", function () {
+function lint() {
   return gulp.src(["src/*.js", "!node_modules/**"])
     .pipe(jshint())
     .pipe(jshint.reporter("default"))
     .pipe(jshint.reporter("fail"));
-});
-
-gulp.task("deploy",
-  ["build", "remove-dist-dir", "copy-files"],
-  function () {}
-);
-
-gulp.task("remove-dist-dir", function () {
-  del.sync("dist/**");
-});
+}
 
 // Prepend the core library, then concat all AngularJS source files.
 // Order matters: core → module → utils → directive.
-gulp.task("concat-js-files", function () {
+function concatJsFiles() {
   return gulp.src([
     CORE_SRC,
     "./src/angular-barcode-febraban.module.js",
@@ -45,26 +35,34 @@ gulp.task("concat-js-files", function () {
     .pipe(concat("angular-barcode-febraban.min.js"))
     .pipe(uglify())
     .pipe(gulp.dest("./dist/"));
-});
+}
 
-gulp.task("minify-css", function () {
+function minifyCss() {
   return gulp.src("./assets/css/barcode.css")
     .pipe(cssmin())
     .pipe(gulp.dest("./dist/css/"));
-});
+}
 
-gulp.task("copy-barcode-font", function () {
+function copyBarcodeFont() {
   return gulp.src("./assets/fonts/BarcodeInterleaved2of5.ttf")
     .pipe(gulp.dest("./dist/fonts/"));
-});
+}
 
-gulp.task("copy-demo", function () {
+function copyDemo() {
   return gulp.src(["./demo/**", "!./demo/index_git.html"])
     .pipe(gulp.dest("./dist/demo/"));
-});
+}
 
-gulp.task("copy-files", ["concat-js-files", "minify-css", "copy-barcode-font", "copy-demo"], function () {});
+const bundle = gulp.parallel(concatJsFiles, minifyCss, copyBarcodeFont, copyDemo);
 
-gulp.task("build", ["lint", "test"], function () {});
+// deploy: clean → lint → bundle
+// Note: karma tests are run separately by CI (requires xvfb + Chrome).
+// Run `karma start karma.conf.js --single-run` locally to execute tests.
+const deploy = gulp.series(clean, lint, bundle);
 
-gulp.task("default", ["deploy"], function () {});
+exports.clean   = clean;
+exports.lint    = lint;
+exports.bundle  = bundle;
+exports.deploy  = deploy;
+exports.build   = deploy;  // alias: npm run build → gulp deploy
+exports.default = deploy;

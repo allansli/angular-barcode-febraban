@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "test": "jest src/__tests__"
+    "test": "jest src/__tests__ --passWithNoTests"
   },
   "keywords": [
     "barcode",

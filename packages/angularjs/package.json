@@ -44,8 +44,7 @@
   "devDependencies": {
     "angular-mocks": "1.7.4",
     "coveralls": "2.11.12",
-    "del": "2.2.2",
-    "gulp": "3.9.1",
+    "gulp": "^4.0.0",
     "gulp-concat": "2.6.0",
     "gulp-cssmin": "0.1.7",
     "gulp-cssnano": "2.1.2",

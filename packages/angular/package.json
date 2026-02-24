@@ -44,9 +44,7 @@
   },
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
-    "@angular/core": ">=15.0.0"
-  },
-  "dependencies": {
+    "@angular/core": ">=15.0.0",
     "@allansli/barcode-febraban-core": "^1.0.0"
   },
   "devDependencies": {
