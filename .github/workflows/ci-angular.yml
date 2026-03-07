@@ -53,7 +53,7 @@ jobs:
           echo "=== dist/ contents ==="
           ls -lh dist/
           echo "=== ESM2022 entry (first 5 lines) ==="
-          head -5 dist/esm2022/ng-barcode-febraban.mjs
+          head -5 dist/esm2022/allansli-ng-barcode-febraban.mjs
           echo "=== Type declarations (first 10 lines) ==="
           head -10 dist/index.d.ts
         working-directory: packages/angular

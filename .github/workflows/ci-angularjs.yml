@@ -53,7 +53,7 @@ jobs:
       - name: Test (Karma + Chrome headless via Xvfb)
         run: >
           xvfb-run --auto-servernum
-          node_modules/.bin/karma start karma.conf.js --single极
+          npx karma start karma.conf.js --single-run
         working-directory: packages/angularjs
         env:
           CHROME_BIN: google-chrome-stable
