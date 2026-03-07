@@ -38,6 +38,10 @@ jobs:
       - name: Install dependencies (monorepo root)
         run: npm ci
 
+      - name: Install React dev dependencies
+        run: npm install --include=dev
+        working-directory: packages/react
+
       - name: Run tests (Jest)
         run: npm test
         working-directory: packages/react

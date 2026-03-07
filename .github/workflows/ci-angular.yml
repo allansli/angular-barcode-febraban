@@ -39,6 +39,10 @@ jobs:
         # Workspace install resolves @allansli/barcode-febraban-core as a local symlink
         run: npm ci
 
+      - name: Install Angular dev dependencies
+        run: npm install --include=dev
+        working-directory: packages/angular
+
       - name: Build (ng-packagr)
         # Compiles TypeScript, runs ngc, generates FESM / ESM2022 bundles + d.ts
         run: npm run build

@@ -39,17 +39,21 @@ jobs:
       - name: Install dependencies (monorepo root)
         run: npm ci
 
+      - name: Install AngularJS dev dependencies
+        run: npm install --include=dev
+        working-directory: packages/angularjs
+
       - name: Build (Gulp)
         run: npm run build
         working-directory: packages/angularjs
 
       # Karma needs a real (or headless) browser. The runner ships Chrome;
       # xvfb-run provides a virtual display so Chrome can open a window.
-      # CHROME_BIN tells karma-chrome-launcher where Chrome is.
+      # CHROME_B极 tells karma-chrome-launcher where Chrome is.
       - name: Test (Karma + Chrome headless via Xvfb)
         run: >
           xvfb-run --auto-servernum
-          node_modules/.bin/karma start karma.conf.js --single-run
+          node_modules/.bin/karma start karma.conf.js --single极
         working-directory: packages/angularjs
         env:
           CHROME_BIN: google-chrome-stable
