@@ -1,8 +1,9 @@
 import resolve from "@rollup/plugin-node-resolve";
 import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
+import { readFileSync } from "fs";
 
-const pkg = require("./package.json");
+const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 
 const external = ["react", "@allansli/barcode-febraban-core"];
 

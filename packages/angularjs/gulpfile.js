@@ -9,7 +9,7 @@ const cssmin = require("gulp-cssmin");
 
 // Core library UMD build — concatenated first so barcodeFebrabanCore
 // global is available to the AngularJS source files.
-const CORE_SRC = "node_modules/@allansli/barcode-febraban-core/src/index.js";
+const CORE_SRC = "../core/src/index.js";
 
 function clean(done) {
   fs.rmSync("dist", { recursive: true, force: true });
