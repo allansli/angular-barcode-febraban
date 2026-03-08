@@ -42,7 +42,7 @@ module.exports = function (config) {
 
     autoWatch: true,
 
-    browsers: ["ChromeHeadless"],
+    browsers: ["PhantomJS"],
 
     singleRun: false,
 
