@@ -14,6 +14,7 @@ export default defineConfig({
     rollupOptions: {
       external: ["vue", "@allansli/barcode-febraban-core"],
       output: {
+        exports: "named",
         globals: {
           vue: "Vue",
           "@allansli/barcode-febraban-core": "barcodeFebrabanCore"
