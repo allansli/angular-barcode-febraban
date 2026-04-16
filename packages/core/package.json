@@ -4,8 +4,10 @@
   "description": "Core pure JavaScript library for ITF (Interleaved 2 of 5) barcode generation — FEBRABAN Brazilian banking standard",
   "main": "src/index.js",
   "module": "src/index.esm.js",
+  "types": "src/index.d.ts",
   "exports": {
     ".": {
+      "types": "./src/index.d.ts",
       "import": "./src/index.esm.js",
       "require": "./src/index.js",
       "default": "./src/index.js"
