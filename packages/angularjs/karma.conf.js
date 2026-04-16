@@ -1,6 +1,6 @@
 // Karma configuration for @allansli/angular-barcode-febraban
 module.exports = function (config) {
-  var configuration = {
+  config.set({
 
     basePath: "",
 
@@ -21,7 +21,7 @@ module.exports = function (config) {
     exclude: [],
 
     preprocessors: {
-      "src/**/*.js": "coverage"
+      "src/**/*.js": ["coverage"]
     },
 
     reporters: ["progress", "coverage"],
@@ -40,18 +40,21 @@ module.exports = function (config) {
 
     logLevel: config.LOG_INFO,
 
-    autoWatch: true,
+    autoWatch: false,
 
-    browsers: ["PhantomJS"],
+    // ChromeHeadlessCI uses --no-sandbox which is required in CI environments
+    // (GitHub Actions runners run as root or in containers without a sandbox).
+    customLaunchers: {
+      ChromeHeadlessCI: {
+        base: "ChromeHeadless",
+        flags: ["--no-sandbox", "--disable-gpu", "--disable-dev-shm-usage"]
+      }
+    },
 
-    singleRun: false,
+    browsers: ["ChromeHeadlessCI"],
+
+    singleRun: true,
 
     concurrency: Infinity
-  };
-
-  if (process.env.TRAVIS) {
-    configuration.browsers = ["PhantomJS"];
-  }
-
-  config.set(configuration);
+  });
 };
