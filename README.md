@@ -1,8 +1,8 @@
 # barcode-febraban
 
-Monorepo for **ITF (Interleaved 2 of 5)** barcode libraries targeting multiple frontend frameworks — built for Brazilian **FEBRABAN** banking standards (boleto bancário).
+Monorepo of **font encoders** for `BarcodeInterleaved2of5.ttf`. Each package turns an even-length digit string into the character sequence that font renders as an ITF (Interleaved 2 of 5) barcode.
 
-The barcode is rendered as text using the `BarcodeInterleaved2of5` font: **no images, no HTTP requests, no SVG**.
+This is **not** a Febraban boleto engine: there is no 47-digit linha digitável → 44-digit código de barras conversion, and no módulo-11 DAC.
 
 ---
 
@@ -10,13 +10,13 @@ The barcode is rendered as text using the `BarcodeInterleaved2of5` font: **no im
 
 | Package | Version | Description |
 |---|---|---|
-| [`@allansli/barcode-febraban-core`](packages/core/README.md) | core | Pure JS library — framework-agnostic |
+| [`@allansli/barcode-febraban-core`](packages/core/README.md) | core | Pure JS encoder — framework-agnostic |
 | [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 1.1.0 | AngularJS (1.x) directive |
-| [`@allansli/react-barcode-febraban`](packages/react/README.md) | 1.0.0 | React 18+ component |
+| [`@allansli/react-barcode-febraban`](packages/react/README.md) | 1.0.0 | React 16.8+ component |
 | [`@allansli/vue-barcode-febraban`](packages/vue/README.md) | 1.0.0 | Vue 3 component |
-| [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 1.0.0 | Angular (2+) component |
+| [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 1.0.0 | Angular 15+ standalone component |
 
-All framework packages consume `@allansli/barcode-febraban-core` as their engine.
+All framework packages consume `@allansli/barcode-febraban-core`.
 
 ---
 
@@ -27,84 +27,28 @@ barcode-febraban (monorepo)
 │
 ├── packages/core           @allansli/barcode-febraban-core
 │   └── src/
-│       ├── index.js        UMD/CJS — works in browser globals, Node, AMD
-│       └── index.esm.js    ESM — for modern bundlers (Vite, Webpack, Rollup)
+│       ├── generate-barcode-sequence.js  shared encoder
+│       ├── index.js        UMD/CJS
+│       └── index.esm.js    ESM re-export of the shared encoder
 │
 ├── packages/angularjs      @allansli/angular-barcode-febraban
-│   └── src/
-│       ├── *.module.js     AngularJS module definition
-│       ├── *.utils.js      Angular constant — delegates to core
-│       └── *.directive.js  <ng-barcode-febraban> element directive
-│
 ├── packages/react          @allansli/react-barcode-febraban
-│   └── src/
-│       └── BarcodeFebraban.jsx
-│
 ├── packages/vue            @allansli/vue-barcode-febraban
-│   └── src/
-│       └── BarcodeFebraban.vue
-│
 └── packages/angular        @allansli/ng-barcode-febraban
-    └── src/
-        ├── barcode-febraban.component.ts
-        └── barcode-febraban.module.ts
 ```
 
 ---
 
 ## Quick start
 
-### Core (pure JS)
-
-```bash
-npm install @allansli/barcode-febraban-core
-```
+Pass a **string** of digits with even length (a 44-digit código de barras is fine). A 47-digit linha digitável returns an empty barcode.
 
 ```js
 import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
 const sequence = generateBarcodeSequence("1234567890");
 ```
 
-### AngularJS (1.x)
-
-```bash
-npm install @allansli/angular-barcode-febraban
-```
-
-```html
-<ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
-```
-
-### React
-
-```bash
-npm install @allansli/react-barcode-febraban
-```
-
-```jsx
-import BarcodeFebraban from "@allansli/react-barcode-febraban";
-<BarcodeFebraban sequence="1234567890" />
-```
-
-### Vue 3
-
-```bash
-npm install @allansli/vue-barcode-febraban
-```
-
-```vue
-<BarcodeFebraban sequence="1234567890" />
-```
-
-### Angular (2+)
-
-```bash
-npm install @allansli/ng-barcode-febraban
-```
-
-```html
-<barcode-febraban sequence="1234567890"></barcode-febraban>
-```
+See each package README for framework usage.
 
 ---
 
@@ -113,13 +57,8 @@ npm install @allansli/ng-barcode-febraban
 This is an **npm workspaces** monorepo.
 
 ```bash
-# Install all dependencies
 npm install
-
-# Build all packages
 npm run build:all
-
-# Test all packages
 npm run test:all
 ```
 
@@ -127,29 +66,23 @@ npm run test:all
 
 ## Publishing
 
-The `scripts/publish-all.js` script streamlines publishing all packages to npm in the correct dependency order (core first).
+`scripts/publish-all.js` publishes in dependency order (core first) and **aborts if core fails**. Angular is published from ng-packagr `dist/`. On GitHub Actions the script adds `--provenance`, matching the per-package workflows.
 
 ```bash
-# Dry run — see what would be published
 npm run publish:dry-run
-
-# Publish all packages
 npm run publish:all
-
-# Publish with a dist-tag (e.g., for pre-releases)
-node scripts/publish-all.js --tag next
-
-# Publish specific packages only
-node scripts/publish-all.js core react
-
-# All options
-node scripts/publish-all.js [--dry-run] [--tag <tag>] [package-key ...]
 ```
 
-Package keys: `core`, `angularjs`, `react`, `vue`, `angular`.
+Do not use this to publish from a pull request. Releases are tagged `core@v*`, `react@v*`, `vue@v*`, `angular@v*`, `angularjs@v*`.
+
+---
+
+## Font license
+
+`BarcodeInterleaved2of5.ttf` is bundled for historical compatibility. **MIT does not cover the font.** See [NOTICE](./NOTICE).
 
 ---
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code only).

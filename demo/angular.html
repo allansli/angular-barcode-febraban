@@ -299,24 +299,25 @@
         <span class="filename">barcode-febraban.component.ts</span>
         <span>Angular component</span>
       </div>
-      <pre><span class="kw">import</span> { Component, Input, OnChanges, SimpleChanges } <span class="kw">from</span> <span class="str">"@angular/core"</span>;
+      <pre><span class="kw">import</span> { Component, Input, OnChanges, OnInit, SimpleChanges } <span class="kw">from</span> <span class="str">"@angular/core"</span>;
+<span class="kw">import</span> { CommonModule } <span class="kw">from</span> <span class="str">"@angular/common"</span>;
 <span class="kw">import</span> { generateBarcodeSequence } <span class="kw">from</span> <span class="str">"@allansli/barcode-febraban-core"</span>;
 
 <span class="dec">@Component</span>({
   selector: <span class="str">"barcode-febraban"</span>,
-  template: <span class="str">`&lt;div class="barcodei2of5"&gt;{{ barcodeSequence }}&lt;/div&gt;`</span>
+  standalone: <span class="kw">true</span>,
+  imports: [CommonModule],
+  template: <span class="str">`&lt;div class="barcodei2of5" [ngClass]="cssClass"&gt;{{ barcodeSequence }}&lt;/div&gt;`</span>
 })
-<span class="kw">export class</span> <span class="tp">BarcodeFebrabânComponent</span> <span class="kw">implements</span> <span class="tp">OnChanges</span> {
-  <span class="dec">@Input</span>() sequence: <span class="tp">string</span> | <span class="tp">number</span> = <span class="str">""</span>;
-
+<span class="kw">export class</span> <span class="tp">BarcodeFebrabanComponent</span> <span class="kw">implements</span> <span class="tp">OnInit</span>, <span class="tp">OnChanges</span> {
+  <span class="dec">@Input</span>() sequence: <span class="tp">string</span> = <span class="str">""</span>;
+  <span class="dec">@Input</span>() cssClass: <span class="tp">string</span> = <span class="str">""</span>;
   barcodeSequence: <span class="tp">string</span> = <span class="str">""</span>;
 
+  ngOnInit(): <span class="tp">void</span> { <span class="kw">this</span>.barcodeSequence = <span class="fn">generateBarcodeSequence</span>(<span class="kw">this</span>.sequence ?? <span class="str">""</span>); }
   ngOnChanges(changes: <span class="tp">SimpleChanges</span>): <span class="tp">void</span> {
     <span class="kw">if</span> (changes[<span class="str">"sequence"</span>]) {
-      <span class="kw">const</span> seq = <span class="tp">String</span>(<span class="kw">this</span>.sequence ?? <span class="str">""</span>);
-      <span class="kw">this</span>.barcodeSequence = seq.length &gt; 0 &amp;&amp; !isNaN(<span class="tp">Number</span>(seq))
-        ? <span class="fn">generateBarcodeSequence</span>(seq)
-        : <span class="str">""</span>;
+      <span class="kw">this</span>.barcodeSequence = <span class="fn">generateBarcodeSequence</span>(<span class="kw">this</span>.sequence ?? <span class="str">""</span>);
     }
   }
 }</pre>
@@ -329,10 +330,10 @@
         <span>Module import</span>
       </div>
       <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">"@angular/core"</span>;
-<span class="kw">import</span> { BarcodeFebrabânModule } <span class="kw">from</span> <span class="str">"@allansli/ng-barcode-febraban"</span>;
+<span class="kw">import</span> { BarcodeFebrabanModule } <span class="kw">from</span> <span class="str">"@allansli/ng-barcode-febraban"</span>;
 
 <span class="dec">@NgModule</span>({
-  imports: [BarcodeFebrabânModule]
+  imports: [BarcodeFebrabanModule]
 })
 <span class="kw">export class</span> <span class="tp">AppModule</span> {}</pre>
     </div>
@@ -353,8 +354,8 @@
 <span class="cmt">&lt;!-- Extra CSS class and inline styles --&gt;</span>
 <span class="tag">&lt;barcode-febraban</span>
   <span class="atr">[sequence]</span>=<span class="val">"sequence"</span>
-  <span class="atr">className</span>=<span class="val">"my-class"</span>
-  <span class="atr">[style]</span>=<span class="val">"{ fontSize: '80px' }"</span>
+  <span class="atr">cssClass</span>=<span class="val">"my-class"</span>
+  <span class="atr">[barcodeStyle]</span>=<span class="val">"{ fontSize: '80px' }"</span>
 <span class="tag">&gt;&lt;/barcode-febraban&gt;</span></pre>
     </div>
 
@@ -374,7 +375,7 @@
         </li>
         <li>
           <span class="step-num">3</span>
-          <span>Import <code>BarcodeFebrabânModule</code> in your <code>AppModule</code> (or use the component as standalone)</span>
+          <span>Import <code>BarcodeFebrabanComponent</code> in a standalone component, or <code>BarcodeFebrabanModule</code> in an NgModule app</span>
         </li>
         <li>
           <span class="step-num">4</span>
@@ -388,7 +389,7 @@
     </div>
 
     <div class="info-card">
-      <strong>How it works:</strong> The <code>BarcodeFebrabânComponent</code> implements
+      <strong>How it works:</strong> The <code>BarcodeFebrabanComponent</code> implements
       <code>OnChanges</code> to detect input changes. Each time <code>sequence</code> changes,
       it calls <code>generateBarcodeSequence()</code> from
       <code>@allansli/barcode-febraban-core</code> and stores the result in
@@ -397,7 +398,7 @@
   </div>
 
   <!-- Core UMD — sets barcodeFebrabanCore global for the live demo -->
-  <script src="../packages/core/src/index.js"></script>
+  <script src="../packages/core/src/generate-barcode-sequence.js"></script>
   <script>
     // Initialize demo on page load
     updateBarcode("1234567890");
@@ -414,19 +415,19 @@
         return;
       }
 
-      var isValid = !isNaN(Number(value)) && value.length % 2 === 0;
+      var encoded = barcodeFebrabanCore.generateBarcodeSequence(value);
 
-      if (!isValid) {
+      if (!encoded) {
         output.textContent = "";
         hint.textContent   = value.length % 2 !== 0
-          ? "Sequence must have an even number of digits"
-          : "Sequence must be numeric";
+          ? "Sequence must have an even number of digits (47-digit linha digitável is not converted)"
+          : "Sequence must be digits only";
         hint.style.display = "";
         return;
       }
 
       hint.style.display  = "none";
-      output.textContent  = barcodeFebrabanCore.generateBarcodeSequence(value);
+      output.textContent  = encoded;
       output.style.fontSize    = "100px";
       output.style.lineHeight  = "1";
       output.style.color       = "#0f172a";

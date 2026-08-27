@@ -1,2 +1,0 @@
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0});var e=require("react"),r=require("@allansli/barcode-febraban-core");function a({sequence:a,className:t,style:s}){var c=null!=a?String(a):"",l=c.length>0&&!isNaN(Number(c))?r.generateBarcodeSequence(c):"",n="barcodei2of5"+(t?" "+t:"");return e.createElement("div",{className:n,style:s},l)}exports.BarcodeFebraban=a,exports.default=a;
-//# sourceMappingURL=index.js.map

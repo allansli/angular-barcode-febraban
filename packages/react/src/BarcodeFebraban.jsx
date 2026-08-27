@@ -2,19 +2,16 @@ import React from "react";
 import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
 
 /**
- * BarcodeFebraban — React component for rendering ITF (Interleaved 2 of 5)
- * barcodes using the BarcodeInterleaved2of5 font.
+ * BarcodeFebraban — React component that renders a BarcodeInterleaved2of5
+ * font string. Not a Febraban boleto parser.
  *
- * @param {Object}        props
- * @param {string|number} props.sequence     - Numeric barcode sequence (even length)
- * @param {string}        [props.className]  - Additional CSS class names
- * @param {Object}        [props.style]      - Inline styles applied to the wrapper div
+ * @param {Object} props
+ * @param {string} props.sequence    - Even-length digit string
+ * @param {string} [props.className] - Additional CSS class names
+ * @param {Object} [props.style]     - Inline styles for the wrapper div
  */
 function BarcodeFebraban({ sequence, className, style }) {
-  var seq = sequence !== undefined && sequence !== null ? String(sequence) : "";
-  var isValid = seq.length > 0 && !isNaN(Number(seq));
-  var barcodeSequence = isValid ? generateBarcodeSequence(seq) : "";
-
+  var barcodeSequence = generateBarcodeSequence(sequence == null ? "" : sequence);
   var cls = "barcodei2of5" + (className ? " " + className : "");
 
   return React.createElement(

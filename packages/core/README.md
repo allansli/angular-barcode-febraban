@@ -1,15 +1,18 @@
 # @allansli/barcode-febraban-core
 
-Core pure JavaScript library for generating **ITF (Interleaved 2 of 5)** barcode sequences, compatible with the `BarcodeInterleaved2of5` font. Designed for **Brazilian FEBRABAN banking standards** (boleto bancário).
+Font encoder for **`BarcodeInterleaved2of5.ttf`**. It turns an even-length string of digits into the character sequence that font renders as an ITF (Interleaved 2 of 5) barcode.
 
-This is the framework-agnostic core consumed by all framework-specific packages:
+This is **not** a Febraban boleto engine:
 
-| Package | Framework |
+| Expectation | This package |
 |---|---|
-| `@allansli/angular-barcode-febraban` | AngularJS (1.x) |
-| `@allansli/react-barcode-febraban` | React 18+ |
-| `@allansli/vue-barcode-febraban` | Vue 3 |
-| `@allansli/ng-barcode-febraban` | Angular (2+) |
+| 44-digit código de barras | Encodes (even length, digits only) |
+| 47-digit linha digitável | Returns `""` — there is no conversion |
+| DAC (módulo 11) | Not computed or checked |
+| Odd length | Returns `""` (no leading-zero pad) |
+| Non-digits / non-strings | Returns `""` (does not throw) |
+
+Framework wrappers (`react` / `vue` / `angular` / `angularjs`) call this function and render the same empty output for invalid input.
 
 ---
 
@@ -40,14 +43,16 @@ const { generateBarcodeSequence } = require("@allansli/barcode-febraban-core");
 const sequence = generateBarcodeSequence("1234567890");
 ```
 
-### Browser (script tag / UMD)
+### Browser (script tag)
 
 ```html
-<script src="node_modules/@allansli/barcode-febraban-core/src/index.js"></script>
+<script src="node_modules/@allansli/barcode-febraban-core/src/generate-barcode-sequence.js"></script>
 <script>
   var sequence = barcodeFebrabanCore.generateBarcodeSequence("1234567890");
 </script>
 ```
+
+The UMD entry `src/index.js` also works in Node/AMD. In a browser it expects the encoder script above (or a bundle that concatenates both).
 
 ---
 
@@ -55,37 +60,33 @@ const sequence = generateBarcodeSequence("1234567890");
 
 ### `generateBarcodeSequence(barcode)`
 
-Converts a numeric string into a font-encoded ITF barcode sequence.
-
 **Parameters**
 
 | Name | Type | Description |
 |---|---|---|
-| `barcode` | `string` | Numeric string with an **even** number of digits |
+| `barcode` | `string` | Digits only, **even** length |
 
-**Returns** `string` — Font-encoded sequence wrapped in parentheses, or `""` for invalid input.
+**Returns** `string` — Font-encoded sequence wrapped in parentheses, or `""` for invalid input (including `null`, numbers, odd length, and 47-digit linha digitável).
 
-**Rules**
-- Input must be non-empty
-- Input length must be even (digits are processed in pairs)
-- Each 2-digit pair maps to a character code:
-  - Pairs `00–49` → `charCode = pair + 48`
-  - Pairs `50–99` → charCode = `pair + 142`
-- Result is wrapped in `(` `)` which the ITF font renders as start/stop bars
+**Encoding** (for this font, not a generic ITF bit pattern):
 
-**Example**
+- Pairs `00–49` → `charCode = pair + 48`
+- Pairs `50–99` → `charCode = pair + 142`
+- Result wrapped in `(` `)` for the font’s start/stop bars
 
 ```js
 generateBarcodeSequence("1234567890");
-// processes pairs: 12, 34, 56, 78, 90
-// → "(<RÆÜè)"
+// pairs: 12, 34, 56, 78, 90 → "(<RÆÜè)"
+
+generateBarcodeSequence("0".repeat(47)); // linha digitável length
+// ""
 ```
 
 ---
 
 ## CSS & Font
 
-Include the bundled CSS and font to render the barcode visually:
+Include the bundled CSS so the encoded string renders with the ITF font:
 
 ```html
 <link rel="stylesheet" href="node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css" />
@@ -97,14 +98,14 @@ Or in a bundler:
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
-Then apply the class to the element rendering the sequence:
-
 ```html
 <div class="barcodei2of5"><!-- sequence goes here --></div>
 ```
+
+The font file has **no license in this repository**. MIT covers the JavaScript only — see [NOTICE](./NOTICE).
 
 ---
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code). The bundled TrueType font is **not** covered by MIT; see [NOTICE](./NOTICE).

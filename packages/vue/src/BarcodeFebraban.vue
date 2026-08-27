@@ -1,5 +1,5 @@
 <template>
-  <div class="barcodei2of5" :class="className" :style="style">{{ barcodeSequence }}</div>
+  <div class="barcodei2of5">{{ barcodeSequence }}</div>
 </template>
 
 <script>
@@ -8,37 +8,21 @@ import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
 export default {
   name: "BarcodeFebraban",
 
+  inheritAttrs: true,
+
   props: {
     /**
-     * Numeric barcode sequence (must have an even number of digits).
+     * Even-length digit string. Extra attrs (class, style) fall through to the root.
      */
     sequence: {
-      type: [String, Number],
-      default: ""
-    },
-    /**
-     * Additional CSS class names applied to the wrapper element.
-     */
-    className: {
       type: String,
       default: ""
-    },
-    /**
-     * Inline styles applied to the wrapper element.
-     */
-    style: {
-      type: Object,
-      default: null
     }
   },
 
   computed: {
     barcodeSequence() {
-      var seq = this.sequence !== undefined && this.sequence !== null
-        ? String(this.sequence)
-        : "";
-      var isValid = seq.length > 0 && !isNaN(Number(seq));
-      return isValid ? generateBarcodeSequence(seq) : "";
+      return generateBarcodeSequence(this.sequence == null ? "" : this.sequence);
     }
   }
 };

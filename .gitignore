@@ -10,6 +10,7 @@ coverage/
 packages/*/dist/
 packages/*/lib/
 packages/angularjs/coverage/
+packages/react/src/*.map
 
 # OS
 .DS_Store

@@ -159,7 +159,7 @@
       </div>
       <pre><span class="cmt">// All props</span>
 <span class="tag">&lt;BarcodeFebraban</span>
-  <span class="atr">sequence</span>=<span class="str">"1234567890"</span>   <span class="cmt">// string | number  (required)</span>
+  <span class="atr">sequence</span>=<span class="str">"1234567890"</span>   <span class="cmt">// string           (required, even-length digits)</span>
   <span class="atr">className</span>=<span class="str">"my-class"</span>   <span class="cmt">// string           (optional extra CSS class)</span>
   <span class="atr">style</span>={{ color: <span class="str">"#000"</span> }} <span class="cmt">// object           (optional inline styles)</span>
 <span class="tag">/&gt;</span></pre>
@@ -176,7 +176,7 @@
   </div>
 
   <!-- Core UMD — exposes barcodeFebrabanCore global -->
-  <script src="../packages/core/src/index.js"></script>
+  <script src="../packages/core/src/generate-barcode-sequence.js"></script>
   <!-- React 18 + ReactDOM (development UMD builds) -->
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>

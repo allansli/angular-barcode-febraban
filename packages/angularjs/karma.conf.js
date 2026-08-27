@@ -29,7 +29,7 @@ module.exports = function (config) {
     // The core library must be loaded before the AngularJS source files
     // so that barcodeFebrabanCore global is available to utils.js.
     files: [
-      path.join(__dirname, "../core/src/index.js"),
+      path.join(__dirname, "../core/src/generate-barcode-sequence.js"),
       resolveFromPackage("angular/angular.js"),
       resolveFromPackage("angular-mocks/angular-mocks.js"),
       "src/angular-barcode-febraban.module.js",

@@ -135,8 +135,8 @@
 
   <header>
     <h1>barcode-febraban</h1>
-    <p>ITF (Interleaved&nbsp;2&nbsp;of&nbsp;5) barcode demos across every major
-       frontend framework — all powered by the same engine.</p>
+    <p>Font-encoder demos for <code>BarcodeInterleaved2of5.ttf</code> —
+       even-length digit strings, not a Febraban boleto parser.</p>
     <span class="core-badge">⚙ @allansli/barcode-febraban-core</span>
   </header>
 
@@ -172,8 +172,8 @@
     <a class="card angular" href="angular.html">
       <span class="badge angular">Angular 15+</span>
       <h2>Angular</h2>
-      <p>Standalone component using <code>@Input()</code> binding and
-         <code>ngOnChanges</code> lifecycle hook.</p>
+      <p>Standalone <code>BarcodeFebrabanComponent</code> (import directly)
+         plus an optional NgModule re-export.</p>
       <code class="pkg">@allansli/ng-barcode-febraban</code>
       <div class="cta"><span>Open demo</span><span>→</span></div>
     </a>
@@ -182,9 +182,9 @@
 
   <footer>
     All demos use
-    <a href="../packages/core/src/index.js">@allansli/barcode-febraban-core</a>
-    — zero dependencies, font-based ITF rendering.<br>
-    No images &nbsp;·&nbsp; No HTTP requests &nbsp;·&nbsp; Works offline
+    <a href="../packages/core/src/generate-barcode-sequence.js">@allansli/barcode-febraban-core</a>
+    — font encoder for BarcodeInterleaved2of5.ttf (not a boleto parser).<br>
+    GitHub Pages demos load framework CDNs (React/Vue/AngularJS) when those pages are opened.
   </footer>
 
 </body>

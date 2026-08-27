@@ -1,9 +1,6 @@
 import resolve from "@rollup/plugin-node-resolve";
 import babel from "@rollup/plugin-babel";
 import terser from "@rollup/plugin-terser";
-import { readFileSync } from "fs";
-
-const pkg = JSON.parse(readFileSync(new URL("./package.json", import.meta.url), "utf8"));
 
 const external = ["react", "@allansli/barcode-febraban-core"];
 
@@ -16,24 +13,22 @@ const babelOptions = {
 };
 
 export default [
-  // ESM build
   {
     input: "src/BarcodeFebraban.jsx",
     external,
     plugins: [resolve(), babel(babelOptions)],
     output: {
-      file: pkg.module,
+      file: "dist/index.esm.js",
       format: "esm",
       sourcemap: true
     }
   },
-  // CJS build
   {
     input: "src/BarcodeFebraban.jsx",
     external,
     plugins: [resolve(), babel(babelOptions), terser()],
     output: {
-      file: pkg.main,
+      file: "dist/index.cjs.js",
       format: "cjs",
       exports: "named",
       sourcemap: true

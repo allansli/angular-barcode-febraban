@@ -3,5 +3,8 @@
   "lib": {
     "entryFile": "src/index.ts"
   },
-  "dest": "dist"
+  "dest": "dist",
+  "allowedNonPeerDependencies": [
+    "@allansli/barcode-febraban-core"
+  ]
 }

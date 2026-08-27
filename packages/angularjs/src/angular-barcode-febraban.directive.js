@@ -5,22 +5,18 @@
       link: link,
       restrict: "E",
       template: "<div class=\"barcodei2of5\">{{sequence}}</div>",
-      scope: false
+      scope: {
+        barcodeSequence: "@"
+      }
     };
 
     return directive;
 
     function link(scope, element, attrs) {
       attrs.$observe("barcodeSequence", function(value) {
-        if (
-          angular.isDefined(value) &&
-          angular.isNumber(Number(value)) &&
-          !isNaN(Number(value))
-        ) {
-          scope.sequence = ngBarcodeUtils.generateBarcodeSequence(
-            attrs.barcodeSequence
-          );
-        }
+        scope.sequence = ngBarcodeUtils.generateBarcodeSequence(
+          angular.isDefined(value) ? value : ""
+        );
       });
     }
   }

@@ -5,20 +5,18 @@ on:
     branches: [main, master, "claude/**"]
     paths:
       - "packages/angularjs/**"
+      - "packages/core/**"
       - ".github/workflows/ci-angularjs.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "packages/angularjs/**"
+      - "packages/core/**"
       - ".github/workflows/ci-angularjs.yml"
   release:
     types: [published]
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # CI — lint, build (Gulp 4), test (Karma + ChromeHeadless)
-  # Skip entirely when an unrelated release fires (e.g. react@v*)
-  # ─────────────────────────────────────────────────────────────────────────────
   ci:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -28,45 +26,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
         run: npm ci
-
-      - name: Install AngularJS dev dependencies
-        run: npm install --include=dev
-        working-directory: packages/angularjs
 
       - name: Build (Gulp)
         run: npm run build
         working-directory: packages/angularjs
 
       - name: Run tests (Karma + ChromeHeadless)
-        # GitHub Actions runners include Chrome; --no-sandbox is required
-        # because the runner may run as root inside a container.
         run: npm test
         working-directory: packages/angularjs
         env:
           CHROMIUM_FLAGS: "--no-sandbox --disable-gpu --disable-dev-shm-usage"
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Publish — runs only when a GitHub Release is published with angularjs@v* tag
-  #
-  # How to publish:
-  #   1. Bump "version" in packages/angularjs/package.json and push to main.
-  #   2. On GitHub, create a Release with tag  angularjs@v<version>
-  #      (e.g.  angularjs@v1.1.1).  Click "Publish release".
-  #   3. This job builds the dist bundle and publishes
-  #      @allansli/angular-barcode-febraban to npm.
-  #
-  # Required repository secret: NPM_TOKEN
-  # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish to npm
     needs: ci
@@ -78,16 +58,16 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write   # for npm provenance
+      id-token: write
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           registry-url: https://registry.npmjs.org
           cache: npm
 

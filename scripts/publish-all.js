@@ -10,9 +10,9 @@
  *   node scripts/publish-all.js --tag next          # publish with a dist-tag
  *   node scripts/publish-all.js core react          # publish specific packages only
  *
- * Or via npm scripts (root package.json):
- *   npm run publish:all
- *   npm run publish:dry-run
+ * Core is published first. If core fails, remaining packages are aborted.
+ * Angular is published from ng-packagr's dist/ directory.
+ * Provenance is added automatically on GitHub Actions (same as the CI jobs).
  */
 
 "use strict";
@@ -21,24 +21,21 @@ const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
 
-// ─── Configuration ────────────────────────────────────────────────────────────
-
 const ALL_PACKAGES = [
   { key: "core",      dir: "packages/core" },
   { key: "angularjs", dir: "packages/angularjs" },
   { key: "react",     dir: "packages/react" },
   { key: "vue",       dir: "packages/vue" },
-  { key: "angular",   dir: "packages/angular" }
+  { key: "angular",   dir: "packages/angular", publishDir: "dist" }
 ];
-
-// ─── Argument parsing ─────────────────────────────────────────────────────────
 
 const args = process.argv.slice(2);
 const isDryRun = args.includes("--dry-run");
 const tagIndex = args.indexOf("--tag");
-const distTag   = tagIndex !== -1 ? args[tagIndex + 1] : null;
+const distTag = tagIndex !== -1 ? args[tagIndex + 1] : null;
+const forceProvenance = args.includes("--provenance");
+const skipProvenance = args.includes("--no-provenance");
 
-// Any remaining positional args are treated as package keys to publish selectively
 const selectedKeys = args.filter(
   (a) => !a.startsWith("--") && a !== distTag
 );
@@ -58,8 +55,6 @@ if (selectedKeys.length > 0) {
   }
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
 function readPackageJson(pkgDir) {
   return JSON.parse(
     fs.readFileSync(path.join(pkgDir, "package.json"), "utf8")
@@ -77,14 +72,23 @@ function buildIfNeeded(pkgJson, pkgDir) {
   }
 }
 
-function publishPackage(pkgDir, isDryRun, distTag) {
-  let cmd = "npm publish --access public";
-  if (isDryRun) cmd += " --dry-run";
-  if (distTag)  cmd += ` --tag ${distTag}`;
-  run(cmd, pkgDir);
+function shouldUseProvenance() {
+  if (skipProvenance) return false;
+  if (forceProvenance) return true;
+  return process.env.GITHUB_ACTIONS === "true";
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+function publishFrom(pkg, pkgDir, isDryRun, distTag) {
+  const parts = ["npm", "publish"];
+  if (pkg.publishDir) {
+    parts.push(pkg.publishDir);
+  }
+  parts.push("--access", "public");
+  if (isDryRun) parts.push("--dry-run");
+  if (distTag) parts.push("--tag", distTag);
+  if (shouldUseProvenance()) parts.push("--provenance");
+  run(parts.join(" "), pkgDir);
+}
 
 const rootDir = path.resolve(__dirname, "..");
 
@@ -94,22 +98,24 @@ console.log("╚═════════════════════�
 console.log();
 
 if (isDryRun) console.log("  [DRY RUN — no packages will be published]\n");
-if (distTag)  console.log(`  [dist-tag: ${distTag}]\n`);
+if (distTag) console.log(`  [dist-tag: ${distTag}]\n`);
+if (shouldUseProvenance()) console.log("  [npm provenance enabled]\n");
 
 console.log(`  Publishing ${packages.length} package(s):\n`);
 packages.forEach((p) => {
-  const pkgDir  = path.join(rootDir, p.dir);
+  const pkgDir = path.join(rootDir, p.dir);
   const pkgJson = readPackageJson(pkgDir);
-  console.log(`    • ${pkgJson.name}@${pkgJson.version}`);
+  const from = p.publishDir ? `${p.dir}/${p.publishDir}` : p.dir;
+  console.log(`    • ${pkgJson.name}@${pkgJson.version}  (${from})`);
 });
 console.log();
 
 let published = 0;
-let failed    = 0;
+let failed = 0;
 const results = [];
 
 for (let i = 0; i < packages.length; i++) {
-  const pkg    = packages[i];
+  const pkg = packages[i];
   const pkgDir = path.join(rootDir, pkg.dir);
 
   let pkgJson;
@@ -120,6 +126,10 @@ for (let i = 0; i < packages.length; i++) {
     console.error(`    ${err.message}\n`);
     failed++;
     results.push({ name: pkg.key, status: "error", error: err.message });
+    if (pkg.key === "core") {
+      console.error("  Core failed; aborting remaining packages.\n");
+      process.exit(1);
+    }
     continue;
   }
 
@@ -127,18 +137,23 @@ for (let i = 0; i < packages.length; i++) {
 
   try {
     buildIfNeeded(pkgJson, pkgDir);
-    publishPackage(pkgDir, isDryRun, distTag);
-    console.log(`    OK\n`);
+    if (pkg.publishDir && !fs.existsSync(path.join(pkgDir, pkg.publishDir))) {
+      throw new Error("Publish directory does not exist: " + pkg.publishDir);
+    }
+    publishFrom(pkg, pkgDir, isDryRun, distTag);
+    console.log("    OK\n");
     published++;
     results.push({ name: pkgJson.name, version: pkgJson.version, status: "ok" });
   } catch (err) {
     console.error(`    FAILED: ${err.message}\n`);
     failed++;
     results.push({ name: pkgJson.name, version: pkgJson.version, status: "failed", error: err.message });
+    if (pkg.key === "core") {
+      console.error("  Core failed; aborting remaining packages.\n");
+      process.exit(1);
+    }
   }
 }
-
-// ─── Summary ──────────────────────────────────────────────────────────────────
 
 console.log("────────────────────────────────────────────────────────");
 console.log(`  Results: ${published} published, ${failed} failed`);

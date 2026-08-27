@@ -5,19 +5,18 @@ on:
     branches: [main, master, "claude/**"]
     paths:
       - "packages/react/**"
+      - "packages/core/**"
       - ".github/workflows/ci-react.yml"
   pull_request:
     branches: [main, master]
     paths:
       - "packages/react/**"
+      - "packages/core/**"
+      - ".github/workflows/ci-react.yml"
   release:
     types: [published]
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # CI — test (Jest) then build (Rollup) to verify the bundle is valid
-  # Skip entirely when an unrelated release fires (e.g. core@v*)
-  # ─────────────────────────────────────────────────────────────────────────────
   ci:
     name: Test & Build
     runs-on: ubuntu-latest
@@ -38,10 +37,6 @@ jobs:
       - name: Install dependencies (monorepo root)
         run: npm ci
 
-      - name: Install React dev dependencies
-        run: npm install --include=dev
-        working-directory: packages/react
-
       - name: Run tests (Jest)
         run: npm test
         working-directory: packages/react
@@ -54,22 +49,14 @@ jobs:
         run: |
           echo "=== dist/ contents ==="
           ls -lh dist/
+          test -f dist/index.esm.js
+          test -f dist/index.cjs.js
           echo "=== ESM entry (first 5 lines) ==="
           head -5 dist/index.esm.js
+          echo "=== CJS entry (first 5 lines) ==="
+          head -5 dist/index.cjs.js
         working-directory: packages/react
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Publish — runs only when a GitHub Release is published with a react@v* tag
-  #
-  # How to publish:
-  #   1. Bump "version" in packages/react/package.json and push to main.
-  #   2. On GitHub, create a Release with tag  react@v<version>
-  #      (e.g.  react@v1.0.1).  Click "Publish release".
-  #   3. This job rebuilds the Rollup bundles and publishes
-  #      @allansli/react-barcode-febraban to npm.
-  #
-  # Required repository secret: NPM_TOKEN
-  # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish to npm
     needs: ci
@@ -81,7 +68,7 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write   # for npm provenance
+      id-token: write
 
     steps:
       - name: Checkout
@@ -98,7 +85,6 @@ jobs:
         run: npm ci
 
       - name: Build (Rollup)
-        # Produces dist/index.esm.js (ESM) and src/index.js (CJS, minified)
         run: npm run build
         working-directory: packages/react
 

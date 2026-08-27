@@ -1,7 +1,7 @@
 {
   "name": "barcode-febraban",
   "private": true,
-  "description": "Monorepo for ITF (Interleaved 2 of 5) barcode libraries across multiple frameworks — FEBRABAN Brazilian banking standard",
+  "description": "Monorepo of BarcodeInterleaved2of5.ttf font encoders for AngularJS, React, Vue, and Angular",
   "workspaces": [
     "packages/core",
     "packages/angularjs",

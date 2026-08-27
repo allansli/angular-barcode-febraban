@@ -1,46 +1,51 @@
-import { Component, Input, OnChanges, SimpleChanges } from "@angular/core";
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from "@angular/core";
+import { CommonModule } from "@angular/common";
 import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
 
 /**
- * BarcodeFebrabânComponent renders an ITF (Interleaved 2 of 5) barcode
- * using the BarcodeInterleaved2of5 font.
+ * Encodes an even-length digit string for BarcodeInterleaved2of5.ttf.
+ * Not a Febraban boleto parser.
  *
- * Usage:
  *   <barcode-febraban sequence="1234567890"></barcode-febraban>
- *
- * Dynamic binding:
  *   <barcode-febraban [sequence]="myBarcodeValue"></barcode-febraban>
  */
 @Component({
   selector: "barcode-febraban",
-  template: `<div class="barcodei2of5" [ngClass]="className" [ngStyle]="style">{{ barcodeSequence }}</div>`
+  standalone: true,
+  imports: [CommonModule],
+  template: `<div class="barcodei2of5" [ngClass]="cssClass" [ngStyle]="barcodeStyle">{{ barcodeSequence }}</div>`
 })
-export class BarcodeFebrabânComponent implements OnChanges {
+export class BarcodeFebrabanComponent implements OnInit, OnChanges {
   /**
-   * Numeric barcode sequence. Must have an even number of digits.
-   * Non-numeric or odd-length values render as an empty barcode.
+   * Even-length digit string. Do not bind a JS number (44-digit values
+   * are not safe as floats).
    */
-  @Input() sequence: string | number = "";
+  @Input() sequence: string = "";
 
   /**
    * Additional CSS class names applied to the wrapper element.
    */
-  @Input() className: string = "";
+  @Input() cssClass: string = "";
 
   /**
-   * Inline styles applied to the wrapper element.
+   * Inline styles applied to the wrapper element. Named barcodeStyle
+   * so it does not collide with Angular's host [style] bindings.
    */
-  @Input() style: { [key: string]: string } = {};
+  @Input() barcodeStyle: { [key: string]: string } = {};
 
   barcodeSequence: string = "";
 
+  ngOnInit(): void {
+    this.updateBarcode();
+  }
+
   ngOnChanges(changes: SimpleChanges): void {
     if (changes["sequence"]) {
-      const seq = this.sequence !== undefined && this.sequence !== null
-        ? String(this.sequence)
-        : "";
-      const isValid = seq.length > 0 && !isNaN(Number(seq));
-      this.barcodeSequence = isValid ? generateBarcodeSequence(seq) : "";
+      this.updateBarcode();
     }
+  }
+
+  private updateBarcode(): void {
+    this.barcodeSequence = generateBarcodeSequence(this.sequence == null ? "" : this.sequence);
   }
 }

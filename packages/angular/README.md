@@ -1,6 +1,6 @@
 # @allansli/ng-barcode-febraban
 
-Angular (2+) component to render **ITF (Interleaved 2 of 5)** barcodes for Brazilian **FEBRABAN** banking standards (boleto bancário). Uses the `BarcodeInterleaved2of5` font — no images, no SVG.
+Angular 15+ **standalone** component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
 
 Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
 
@@ -12,44 +12,36 @@ Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
 npm install @allansli/ng-barcode-febraban
 ```
 
+Core is a runtime dependency of this package (no extra install).
+
 ## Setup
 
-**1. Import the module**
+**Standalone component (Angular 15+)**
 
 ```typescript
-// app.module.ts
-import { NgModule } from "@angular/core";
-import { BarcodeFebrabânModule } from "@allansli/ng-barcode-febraban";
+import { Component } from "@angular/core";
+import { BarcodeFebrabanComponent } from "@allansli/ng-barcode-febraban";
 
-@NgModule({
-  imports: [BarcodeFebrabânModule]
+@Component({
+  standalone: true,
+  imports: [BarcodeFebrabanComponent],
+  template: `<barcode-febraban [sequence]="myBarcodeSequence"></barcode-febraban>`
 })
-export class AppModule {}
+export class AppComponent {
+  myBarcodeSequence = "1234567890";
+}
 ```
 
-**2. Include the barcode CSS**
+**NgModule apps** can import `BarcodeFebrabanModule`, which re-exports the same standalone component.
 
-In `angular.json`, add to the `styles` array:
-
-```json
-"styles": [
-  "node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css"
-]
-```
-
-Or import directly in your global `styles.css`:
+**CSS** — in `angular.json` styles, or:
 
 ```css
-@import "~@allansli/barcode-febraban-core/assets/css/barcode.css";
+@import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
-**3. Use the component in your template**
-
 ```html
-<!-- static -->
 <barcode-febraban sequence="1234567890"></barcode-febraban>
-
-<!-- dynamic binding -->
 <barcode-febraban [sequence]="myBarcodeSequence"></barcode-febraban>
 ```
 
@@ -61,20 +53,16 @@ Or import directly in your global `styles.css`:
 
 | Input | Type | Default | Description |
 |---|---|---|---|
-| `sequence` | `string \| number` | `""` | Numeric barcode sequence (even number of digits) |
-| `className` | `string` | `""` | Additional CSS class names |
-| `style` | `object` | `{}` | Inline styles for the wrapper element |
+| `sequence` | `string` | `""` | Even-length digit string. Do not bind a JS `number`. |
+| `cssClass` | `string` | `""` | Additional CSS class names |
+| `barcodeStyle` | `object` | `{}` | Inline styles (named to avoid colliding with Angular `[style]`) |
 
----
+Invalid input renders as an empty barcode.
 
-## Building the package
-
-```bash
-npm run build  # runs ng-packagr
-```
+The bundled TrueType font is **not** covered by MIT. See [`packages/core/NOTICE`](../core/NOTICE).
 
 ---
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code). The ITF font shipped by the core package is not licensed under MIT.

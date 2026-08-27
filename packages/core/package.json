@@ -1,10 +1,13 @@
 {
   "name": "@allansli/barcode-febraban-core",
   "version": "1.0.0",
-  "description": "Core pure JavaScript library for ITF (Interleaved 2 of 5) barcode generation — FEBRABAN Brazilian banking standard",
+  "description": "Font encoder for BarcodeInterleaved2of5.ttf (ITF). Not a Febraban boleto parser.",
   "main": "src/index.js",
   "module": "src/index.esm.js",
   "types": "src/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./src/index.d.ts",
@@ -15,17 +18,21 @@
     "./assets/*": "./assets/*"
   },
   "files": [
-    "src",
-    "assets"
+    "src/index.js",
+    "src/index.esm.js",
+    "src/index.d.ts",
+    "src/generate-barcode-sequence.js",
+    "assets",
+    "NOTICE"
   ],
   "scripts": {
-    "test": "jest src/__tests__"
+    "test": "jest src/__tests__/index.test.js && node src/__tests__/esm-parity.mjs"
   },
   "keywords": [
     "barcode",
-    "febraban",
     "itf",
     "interleaved-2-of-5",
+    "font-encoder",
     "boleto",
     "core",
     "pure-js",

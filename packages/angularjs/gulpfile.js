@@ -9,7 +9,7 @@ const cssmin = require("gulp-cssmin");
 
 // Core library UMD build — concatenated first so barcodeFebrabanCore
 // global is available to the AngularJS source files.
-const CORE_SRC = "../core/src/index.js";
+const CORE_SRC = "../core/src/generate-barcode-sequence.js";
 
 function clean(done) {
   fs.rmSync("dist", { recursive: true, force: true });
@@ -48,12 +48,7 @@ function copyBarcodeFont() {
     .pipe(gulp.dest("./dist/fonts/"));
 }
 
-function copyDemo() {
-  return gulp.src(["./demo/**", "!./demo/index_git.html"])
-    .pipe(gulp.dest("./dist/demo/"));
-}
-
-const bundle = gulp.parallel(concatJsFiles, minifyCss, copyBarcodeFont, copyDemo);
+const bundle = gulp.parallel(concatJsFiles, minifyCss, copyBarcodeFont);
 
 // deploy: clean → lint → bundle
 // Note: karma tests are run separately by CI (requires xvfb + Chrome).

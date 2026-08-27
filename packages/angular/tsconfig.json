@@ -13,6 +13,9 @@
     "skipLibCheck": true,
     "sourceMap": true
   },
+  "angularCompilerOptions": {
+    "compilationMode": "partial"
+  },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "lib", "src/**/*.spec.ts"]
 }

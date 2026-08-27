@@ -1,0 +1,14 @@
+@allansli/angular-barcode-febraban
+=================================
+
+The JavaScript source in this package is licensed under the MIT License.
+See the repository LICENSE file.
+
+Font
+----
+assets/fonts/BarcodeInterleaved2of5.ttf (also copied to dist/fonts on build)
+is a TrueType font. Its name table identifies it as "Code 2/5 Interleaved",
+Copyright 2000. This package does not include a license grant for that font.
+
+The MIT license applies to the library source code only. It does not grant
+rights to use, copy, or redistribute the font.

@@ -1,7 +1,7 @@
 {
   "name": "@allansli/angular-barcode-febraban",
   "version": "1.1.0",
-  "description": "AngularJS (1.x) directive to render ITF (Interleaved 2 of 5) barcodes — FEBRABAN Brazilian banking standard",
+  "description": "AngularJS (1.x) directive that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
   "main": "dist/angular-barcode-febraban.min.js",
   "scripts": {
     "build": "gulp deploy",
@@ -11,12 +11,11 @@
     "barcode",
     "angularjs",
     "angular",
-    "febraban",
-    "intercalado 2 de 5",
-    "interleaved 2 of 5",
+    "itf",
+    "interleaved-2-of-5",
+    "font-encoder",
     "boleto",
     "ITF",
-    "ITF barcode",
     "codigo-de-barras"
   ],
   "author": "Allan Martins de Paula",
@@ -34,14 +33,20 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "assets"
+    "dist/angular-barcode-febraban.min.js",
+    "dist/css",
+    "dist/fonts",
+    "assets",
+    "NOTICE"
   ],
+  "peerDependencies": {
+    "angular": ">=1.5.0 <2"
+  },
   "dependencies": {
-    "@allansli/barcode-febraban-core": "^1.0.0",
-    "angular": "1.8.0"
+    "@allansli/barcode-febraban-core": "^1.0.0"
   },
   "devDependencies": {
+    "angular": "1.8.0",
     "angular-mocks": "1.7.4",
     "coveralls": "2.11.12",
     "gulp": "^4.0.0",

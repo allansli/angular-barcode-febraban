@@ -1,8 +1,10 @@
 # @allansli/angular-barcode-febraban
 
-AngularJS (1.x) directive to render **ITF (Interleaved 2 of 5)** barcodes for Brazilian **FEBRABAN** banking standards (boleto bancário). Uses the `BarcodeInterleaved2of5` font — no images, no HTTP requests.
+AngularJS (1.x) directive that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
 
 Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
+
+Peer: `angular` `>=1.5 <2`.
 
 ---
 
@@ -31,13 +33,10 @@ angular.module("myApp", ["angular-barcode-febraban"]);
 
 ```html
 <ng-barcode-febraban barcode-sequence="1234567890"></ng-barcode-febraban>
-```
-
-Dynamic binding:
-
-```html
 <ng-barcode-febraban barcode-sequence="{{vm.sequence}}"></ng-barcode-febraban>
 ```
+
+The directive uses an isolate scope. Invalid input (including a valid value that later becomes invalid) renders as an empty barcode.
 
 ---
 
@@ -45,11 +44,9 @@ Dynamic binding:
 
 | Attribute | Type | Description |
 |---|---|---|
-| `barcode-sequence` | string (numeric) | Even-length numeric string to render as barcode |
+| `barcode-sequence` | string | Even-length digit string |
 
-**Validation:** Non-numeric values or odd-length strings render as an empty barcode.
-
----
+The bundled TrueType font is **not** covered by MIT. See [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building from source
 
@@ -68,4 +65,4 @@ npm test
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code). The ITF font shipped with this package is not licensed under MIT.

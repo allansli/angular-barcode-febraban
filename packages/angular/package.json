@@ -1,31 +1,19 @@
 {
   "name": "@allansli/ng-barcode-febraban",
   "version": "1.0.0",
-  "description": "Angular (2+) component to render ITF (Interleaved 2 of 5) barcodes — FEBRABAN Brazilian banking standard",
-  "main": "dist/esm2022/ng-barcode-febraban.mjs",
-  "module": "dist/esm2022/ng-barcode-febraban.mjs",
-  "typings": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/esm2022/ng-barcode-febraban.mjs",
-      "default": "./dist/esm2022/ng-barcode-febraban.mjs"
-    }
-  },
-  "files": [
-    "dist",
-    "src"
-  ],
+  "description": "Angular component that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
   "scripts": {
-    "build": "ng-packagr -p ng-package.json"
+    "build": "ng-packagr -p ng-package.json",
+    "test": "jest"
   },
   "keywords": [
     "barcode",
     "angular",
     "ng",
-    "febraban",
-    "interleaved-2-of-5",
-    "boleto",
     "itf",
+    "interleaved-2-of-5",
+    "font-encoder",
+    "boleto",
     "codigo-de-barras"
   ],
   "author": "Allan Martins de Paula",
@@ -44,14 +32,19 @@
   },
   "peerDependencies": {
     "@angular/common": ">=15.0.0",
-    "@angular/core": ">=15.0.0",
+    "@angular/core": ">=15.0.0"
+  },
+  "dependencies": {
     "@allansli/barcode-febraban-core": "^1.0.0"
   },
   "devDependencies": {
+    "@angular/common": "^17.0.0",
     "@angular/compiler": "^17.0.0",
     "@angular/core": "^17.0.0",
-    "@angular/common": "^17.0.0",
+    "@types/jest": "^29.5.0",
+    "jest": "^29.7.0",
     "ng-packagr": "^17.0.0",
+    "ts-jest": "^29.1.0",
     "typescript": "^5.2.0"
   }
 }

@@ -1,8 +1,8 @@
 # @allansli/react-barcode-febraban
 
-React component to render **ITF (Interleaved 2 of 5)** barcodes for Brazilian **FEBRABAN** banking standards (boleto bancário). Uses the `BarcodeInterleaved2of5` font — no images, no SVG.
+React component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
 
-Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
+Requires **React 16.8+** (`createElement` only; the GitHub Pages demo uses React 18 `createRoot`). Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
 
 ---
 
@@ -27,25 +27,19 @@ function App() {
 
 | Prop | Type | Required | Description |
 |---|---|---|---|
-| `sequence` | `string \| number` | yes | Numeric barcode sequence (even number of digits) |
+| `sequence` | `string` | yes | Even-length digit string. Do not pass a JS `number` (44-digit values are not safe as floats). |
 | `className` | `string` | no | Additional CSS class names for the wrapper div |
 | `style` | `object` | no | Inline styles for the wrapper div |
 
-**Validation:** Invalid or odd-length sequences render as an empty barcode.
+Invalid input (odd length, non-digits, empty, 47-digit linha digitável) renders as an empty barcode.
 
 ## CSS
-
-The component renders a `<div class="barcodei2of5">`. Include the CSS from the core package to apply the barcode font:
 
 ```js
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
-Or link the stylesheet manually in your HTML:
-
-```html
-<link rel="stylesheet" href="node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css" />
-```
+The bundled TrueType font is **not** covered by this package’s MIT license. See [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building the package
 
@@ -53,10 +47,10 @@ Or link the stylesheet manually in your HTML:
 npm run build
 ```
 
-Produces `dist/index.esm.js` (ESM) from the JSX source via Rollup.
+Produces `dist/index.esm.js` (ESM) and `dist/index.cjs.js` (CJS) from the JSX source via Rollup.
 
 ---
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code). The ITF font shipped by the core package is not licensed under MIT.

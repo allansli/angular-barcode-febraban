@@ -1,15 +1,17 @@
 /**
  * @allansli/barcode-febraban-core — TypeScript declarations
  *
- * Provides type information for both the ESM (named export) and
- * CommonJS / UMD (default export) entry points.
+ * Font encoder for BarcodeInterleaved2of5.ttf. Not a Febraban boleto parser.
  */
 
 /**
- * Generates an ITF (Interleaved 2 of 5) barcode sequence string for use
- * with the BarcodeInterleaved2of5 font.
+ * Encodes an even-length digit string for the BarcodeInterleaved2of5 font.
  *
- * @param barcode - A numeric string with an even number of digits.
+ * Returns "" when `barcode` is not a string, is empty, has odd length,
+ * or contains any non-digit character. Does not convert 47-digit linha
+ * digitável (odd length → "") and does not compute a DAC.
+ *
+ * @param barcode - Numeric string with an even number of digits.
  * @returns Font-encoded barcode string, or "" for invalid input.
  */
 export declare function generateBarcodeSequence(barcode: string): string;

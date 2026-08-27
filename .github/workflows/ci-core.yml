@@ -10,14 +10,11 @@ on:
     branches: [main, master]
     paths:
       - "packages/core/**"
+      - ".github/workflows/ci-core.yml"
   release:
     types: [published]
 
 jobs:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # CI — runs on every push / PR, and on release (to gate publish)
-  # Skip entirely when an unrelated release fires (e.g. react@v*)
-  # ─────────────────────────────────────────────────────────────────────────────
   ci:
     name: Test
     runs-on: ubuntu-latest
@@ -42,17 +39,6 @@ jobs:
         run: npm test
         working-directory: packages/core
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Publish — runs only when a GitHub Release is published with a core@v* tag
-  #
-  # How to publish:
-  #   1. Bump "version" in packages/core/package.json and push to main.
-  #   2. On GitHub, create a Release and set the tag to  core@v<version>
-  #      (e.g.  core@v1.0.1).  Click "Publish release".
-  #   3. This job will build and publish @allansli/barcode-febraban-core to npm.
-  #
-  # Required repository secret: NPM_TOKEN
-  # ─────────────────────────────────────────────────────────────────────────────
   publish:
     name: Publish to npm
     needs: ci
@@ -64,7 +50,7 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write   # for npm provenance
+      id-token: write
 
     steps:
       - name: Checkout
@@ -80,7 +66,6 @@ jobs:
       - name: Install dependencies (monorepo root)
         run: npm ci
 
-      # core has no build step — source files are published directly
       - name: Publish @allansli/barcode-febraban-core
         run: npm publish --access public --provenance
         working-directory: packages/core

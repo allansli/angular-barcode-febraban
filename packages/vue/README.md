@@ -1,6 +1,6 @@
 # @allansli/vue-barcode-febraban
 
-Vue 3 component to render **ITF (Interleaved 2 of 5)** barcodes for Brazilian **FEBRABAN** banking standards (boleto bancário). Uses the `BarcodeInterleaved2of5` font — no images, no SVG.
+Vue 3 component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
 
 Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
 
@@ -18,7 +18,7 @@ npm install @allansli/vue-barcode-febraban
 
 ```vue
 <template>
-  <BarcodeFebraban sequence="1234567890" />
+  <BarcodeFebraban sequence="1234567890" class="my-barcode" />
 </template>
 
 <script setup>
@@ -27,21 +27,26 @@ import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 </script>
 ```
 
+`class` and `style` fall through onto the root element (do not pass `className`).
+
 ### As a global plugin
+
+The **default export is the plugin**, so `app.use(...)` works:
 
 ```js
 import { createApp } from "vue";
 import App from "./App.vue";
-import { BarcodeFebrabanPlugin } from "@allansli/vue-barcode-febraban";
+import BarcodeFebrabanPlugin from "@allansli/vue-barcode-febraban";
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 
 createApp(App).use(BarcodeFebrabanPlugin).mount("#app");
 ```
 
 ```html
-<!-- use anywhere in templates -->
 <BarcodeFebraban sequence="1234567890" />
 ```
+
+The component remains available as a named export: `import { BarcodeFebraban } from "@allansli/vue-barcode-febraban"`.
 
 ---
 
@@ -49,21 +54,17 @@ createApp(App).use(BarcodeFebrabanPlugin).mount("#app");
 
 | Prop | Type | Default | Description |
 |---|---|---|---|
-| `sequence` | `string \| number` | `""` | Numeric barcode sequence (even number of digits) |
-| `className` | `string` | `""` | Additional CSS class names |
-| `style` | `object` | `null` | Inline styles for the wrapper element |
+| `sequence` | `string` | `""` | Even-length digit string. Do not pass a JS `number`. |
 
----
+Invalid input renders as an empty barcode.
 
 ## CSS
-
-Include the barcode font CSS from the core package:
 
 ```js
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
----
+The bundled TrueType font is **not** covered by MIT. See [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building the package
 
@@ -77,4 +78,4 @@ Produces `dist/index.es.js` (ESM) and `dist/index.cjs.js` (CJS) via Vite.
 
 ## License
 
-MIT © Allan Martins de Paula
+MIT © Allan Martins de Paula (source code). The ITF font shipped by the core package is not licensed under MIT.

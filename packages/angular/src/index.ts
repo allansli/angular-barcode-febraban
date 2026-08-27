@@ -1,5 +1,5 @@
 /*
  * Public API for @allansli/ng-barcode-febraban
  */
-export { BarcodeFebrabânComponent } from "./barcode-febraban.component";
-export { BarcodeFebrabânModule } from "./barcode-febraban.module";
+export { BarcodeFebrabanComponent } from "./barcode-febraban.component";
+export { BarcodeFebrabanModule } from "./barcode-febraban.module";
