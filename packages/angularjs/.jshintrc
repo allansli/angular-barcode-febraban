@@ -1,0 +1,27 @@
+{
+  "curly": true,
+  "immed": true,
+  "newcap": true,
+  "noarg": true,
+  "sub": true,
+  "boss": true,
+  "eqnull": true,
+  "quotmark": "double",
+  "trailing": true,
+  "undef": true,
+  "browser": true,
+  "jquery": true,
+  "globals": {
+    "angular": false,
+    "barcodeFebrabanCore": false,
+    "describe": false,
+    "beforeEach": false,
+    "module": false,
+    "inject": false,
+    "it": false,
+    "expect": false,
+    "spyOn": false,
+    "afterEach": false,
+    "jasmine": false
+  }
+}

@@ -1,0 +1,74 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    # Optional: only run when specific packages are touched
+    # paths:
+    #   - "packages/**"
+
+jobs:
+  claude-review:
+    # Optional: restrict to specific authors, e.g. external contributors
+    # if: |
+    #   github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' ||
+    #   github.event.pull_request.author_association == 'CONTRIBUTOR'
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Please review this pull request for the **barcode-febraban monorepo** — a
+            collection of ITF (Interleaved 2 of 5) barcode libraries for AngularJS,
+            React, Vue 3, and Angular, all backed by a shared pure-JS core package.
+
+            Monorepo structure:
+              packages/core        — @allansli/barcode-febraban-core (pure JS, no deps)
+              packages/angularjs   — @allansli/angular-barcode-febraban (AngularJS 1.x directive)
+              packages/react       — @allansli/react-barcode-febraban (React component)
+              packages/vue         — @allansli/vue-barcode-febraban (Vue 3 SFC)
+              packages/angular     — @allansli/ng-barcode-febraban (Angular 15+ component)
+              demo/                — standalone HTML demos for each framework
+
+            Please evaluate and leave feedback on:
+            - **Correctness** — barcode generation logic, directive/component behaviour,
+              edge cases (empty input, odd-length sequences, non-numeric characters)
+            - **Code quality** — readability, naming, DRY, separation of concerns
+            - **Framework conventions** — correct use of AngularJS scope/$observe,
+              React hooks, Vue 3 Composition API, Angular OnChanges / @Input()
+            - **Performance** — unnecessary re-renders, watchers, or recomputations
+            - **Security** — XSS risks in template rendering or innerHTML usage
+            - **Test coverage** — are new behaviours covered by the existing test suites?
+            - **Build compatibility** — changes that could break Gulp / Rollup / Vite /
+              ng-packagr builds or the npm publish step
+            - **Demo pages** — if demo/ files were changed, verify they still work
+              standalone (no build required)
+
+            Use the repository's CLAUDE.md for style and convention guidance if present.
+            Be constructive and specific — reference file names and line numbers.
+
+            Use `gh pr diff` to inspect the changes, then use `gh pr comment` to post
+            your review as a single, well-structured comment on the PR.
+
+          claude_args: >-
+            --allowed-tools
+            "Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh issue view:*)"

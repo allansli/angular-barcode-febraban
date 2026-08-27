@@ -1,0 +1,64 @@
+{
+  "name": "@allansli/angular-barcode-febraban",
+  "version": "1.1.0",
+  "description": "AngularJS (1.x) directive that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
+  "main": "dist/angular-barcode-febraban.min.js",
+  "scripts": {
+    "build": "gulp deploy",
+    "test": "karma start karma.conf.js --single-run"
+  },
+  "keywords": [
+    "barcode",
+    "angularjs",
+    "angular",
+    "itf",
+    "interleaved-2-of-5",
+    "font-encoder",
+    "boleto",
+    "ITF",
+    "codigo-de-barras"
+  ],
+  "author": "Allan Martins de Paula",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allansli/angular-barcode-febraban.git",
+    "directory": "packages/angularjs"
+  },
+  "bugs": {
+    "url": "https://github.com/allansli/angular-barcode-febraban/issues"
+  },
+  "homepage": "https://github.com/allansli/angular-barcode-febraban/tree/master/packages/angularjs#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/angular-barcode-febraban.min.js",
+    "dist/css",
+    "NOTICE"
+  ],
+  "peerDependencies": {
+    "angular": ">=1.5.0 <2"
+  },
+  "dependencies": {
+    "@allansli/barcode-febraban-core": "^1.0.0"
+  },
+  "devDependencies": {
+    "angular": "1.8.0",
+    "angular-mocks": "1.7.4",
+    "coveralls": "2.11.12",
+    "gulp": "^4.0.0",
+    "gulp-concat": "2.6.0",
+    "gulp-cssmin": "0.1.7",
+    "gulp-cssnano": "2.1.2",
+    "gulp-eslint": "3.0.1",
+    "gulp-jshint": "2.0.1",
+    "gulp-uglify": "2.0.0",
+    "jasmine": "2.5.1",
+    "jshint": "2.9.3",
+    "karma": "^6.4.0",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-coverage": "^2.2.0",
+    "karma-jasmine": "^4.0.0"
+  }
+}

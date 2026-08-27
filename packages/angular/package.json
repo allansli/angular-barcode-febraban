@@ -1,0 +1,50 @@
+{
+  "name": "@allansli/ng-barcode-febraban",
+  "version": "1.0.0",
+  "description": "Angular component that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
+  "scripts": {
+    "build": "ng-packagr -p ng-package.json",
+    "test": "jest"
+  },
+  "keywords": [
+    "barcode",
+    "angular",
+    "ng",
+    "itf",
+    "interleaved-2-of-5",
+    "font-encoder",
+    "boleto",
+    "codigo-de-barras"
+  ],
+  "author": "Allan Martins de Paula",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allansli/angular-barcode-febraban.git",
+    "directory": "packages/angular"
+  },
+  "bugs": {
+    "url": "https://github.com/allansli/angular-barcode-febraban/issues"
+  },
+  "homepage": "https://github.com/allansli/angular-barcode-febraban/tree/master/packages/angular#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/common": ">=15.0.0",
+    "@angular/core": ">=15.0.0"
+  },
+  "dependencies": {
+    "@allansli/barcode-febraban-core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@angular/common": "^17.0.0",
+    "@angular/compiler": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@types/jest": "^29.5.0",
+    "jest": "^29.7.0",
+    "ng-packagr": "^17.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.2.0"
+  }
+}

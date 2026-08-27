@@ -1,0 +1,47 @@
+barcode-febraban
+================
+
+The JavaScript and TypeScript source in this repository is licensed under the
+MIT License. See LICENSE.
+
+Font (not MIT)
+--------------
+BarcodeInterleaved2of5.ttf is kept in git for historical and demo use:
+
+  packages/core/assets/fonts/BarcodeInterleaved2of5.ttf
+  packages/angularjs/assets/fonts/BarcodeInterleaved2of5.ttf
+
+It is excluded from npm tarballs. MIT does not grant rights in the font.
+
+Name table of this file (verified from the TTF, not inferred):
+
+  Copyright:  "Copyright 2000"
+  Family:     "Code 2/5 Interleaved"
+  Version:    "1.00; June 21, 2000"
+  Size:       11832 bytes
+  License / License URL name-table IDs: absent
+
+No license grant for this file was found in the repository or in the font.
+
+Related family (not asserted to be this file)
+---------------------------------------------
+A shareware ITF barcode set from Chaos Microsystems Inc. (Daniel Lajeunesse,
+Gloucester, Ontario, 1999; Fontlab V2.5) is documented at:
+
+  https://luc.devroye.org/fonts-29893.html
+  https://luc.devroye.org/barcode.html
+
+Listings of that family use the name-table copyright
+"Copyright 1999 by Chaos Microsystems Inc., All rights reserved." and are
+labeled "personal use · check for commercial" on download sites. That is not
+a redistributable MIT grant, and this NOTICE does not adopt those terms.
+
+This repo's TTF is the same *kind* of font (ITF / interleaved 2 of 5) but is
+**not confirmed to be the Chaos file**: different family name ("Code 2/5
+Interleaved" vs "Interleaved 2of5"), copyright year (2000 vs 1999), version
+string ("1.00; June 21, 2000" vs "Fontlab V2.5 9/17/99"), and size
+(~12 KB vs ~62 KB).
+
+Do not treat this NOTICE as permission to redistribute the font. Host your
+own copy of a font you are licensed to use, or copy the git file for local
+demos only.

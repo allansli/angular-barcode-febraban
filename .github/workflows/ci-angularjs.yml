@@ -1,0 +1,85 @@
+name: AngularJS Package CI/CD
+
+on:
+  push:
+    branches: [main, master, "claude/**"]
+    paths:
+      - "packages/angularjs/**"
+      - "packages/core/**"
+      - ".github/workflows/ci-angularjs.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "packages/angularjs/**"
+      - "packages/core/**"
+      - ".github/workflows/ci-angularjs.yml"
+  release:
+    types: [published]
+
+jobs:
+  ci:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name != 'release' ||
+      startsWith(github.event.release.tag_name, 'angularjs@v')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Gulp)
+        run: npm run build
+        working-directory: packages/angularjs
+
+      - name: Run tests (Karma + ChromeHeadless)
+        run: npm test
+        working-directory: packages/angularjs
+        env:
+          CHROMIUM_FLAGS: "--no-sandbox --disable-gpu --disable-dev-shm-usage"
+
+  publish:
+    name: Publish to npm
+    needs: ci
+    runs-on: ubuntu-latest
+    if: >
+      github.event_name == 'release' &&
+      github.event.action == 'published' &&
+      startsWith(github.event.release.tag_name, 'angularjs@v')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Gulp)
+        run: npm run build
+        working-directory: packages/angularjs
+
+      - name: Publish @allansli/angular-barcode-febraban
+        run: npm publish --access public --provenance
+        working-directory: packages/angularjs
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

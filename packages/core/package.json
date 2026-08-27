@@ -1,0 +1,58 @@
+{
+  "name": "@allansli/barcode-febraban-core",
+  "version": "1.0.0",
+  "description": "Font encoder for BarcodeInterleaved2of5.ttf (ITF). Not a Febraban boleto parser.",
+  "main": "src/index.js",
+  "module": "src/index.esm.js",
+  "types": "src/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "import": "./src/index.esm.js",
+      "require": "./src/index.js",
+      "default": "./src/index.js"
+    },
+    "./assets/*": "./assets/*"
+  },
+  "files": [
+    "src/index.js",
+    "src/index.esm.js",
+    "src/index.d.ts",
+    "src/generate-barcode-sequence.js",
+    "assets/css",
+    "NOTICE"
+  ],
+  "scripts": {
+    "test": "jest src/__tests__/index.test.js && node src/__tests__/esm-parity.mjs"
+  },
+  "keywords": [
+    "barcode",
+    "itf",
+    "interleaved-2-of-5",
+    "font-encoder",
+    "boleto",
+    "core",
+    "pure-js",
+    "codigo-de-barras"
+  ],
+  "author": "Allan Martins de Paula",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/allansli/angular-barcode-febraban.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/allansli/angular-barcode-febraban/issues"
+  },
+  "homepage": "https://github.com/allansli/angular-barcode-febraban/tree/master/packages/core#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
