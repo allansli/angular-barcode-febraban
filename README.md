@@ -23,19 +23,18 @@ All framework packages consume `@allansli/barcode-febraban-core`.
 ## Architecture
 
 ```
-barcode-febraban (monorepo)
+barcode-febraban (npm workspaces monorepo)
 │
 ├── packages/core           @allansli/barcode-febraban-core
-│   └── src/
-│       ├── generate-barcode-sequence.js  shared encoder
-│       ├── index.js        UMD/CJS
-│       └── index.esm.js    ESM re-export of the shared encoder
-│
 ├── packages/angularjs      @allansli/angular-barcode-febraban
 ├── packages/react          @allansli/react-barcode-febraban
 ├── packages/vue            @allansli/vue-barcode-febraban
-└── packages/angular        @allansli/ng-barcode-febraban
+├── packages/angular        @allansli/ng-barcode-febraban
+└── demo/                   GitHub Pages demos (framework CDNs, pinned)
 ```
+
+The published libraries live only under `packages/`. There is no parallel
+AngularJS product at the repository root.
 
 ---
 
@@ -77,9 +76,13 @@ Do not use this to publish from a pull request. Releases are tagged `core@v*`, `
 
 ---
 
-## Font license
+## Font
 
-`BarcodeInterleaved2of5.ttf` is bundled for historical compatibility. **MIT does not cover the font.** See [NOTICE](./NOTICE).
+`BarcodeInterleaved2of5.ttf` stays in git for demos. It is **excluded from npm**.
+Name table: “Code 2/5 Interleaved”, Copyright 2000, version 1.00 (21 Jun 2000).
+No license grant. A nearby Chaos Microsystems shareware family (1999) is
+documented at https://luc.devroye.org/fonts-29893.html — **not confirmed to be
+this file**, and not a MIT grant. See [NOTICE](./NOTICE).
 
 ---
 

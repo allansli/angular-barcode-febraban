@@ -35,8 +35,6 @@
   "files": [
     "dist/angular-barcode-febraban.min.js",
     "dist/css",
-    "dist/fonts",
-    "assets",
     "NOTICE"
   ],
   "peerDependencies": {

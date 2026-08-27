@@ -4,8 +4,8 @@
     angular
         .module("barcode-demo")
         .controller("BarcodeDemoController", BarcodeDemoController);
-    function BarcodeDemoController(ngBarcodeUtils) {
+    function BarcodeDemoController() {
         var vm = this;
-        vm.sequence = 1234567890; 
+        vm.sequence = "1234567890";
     }
 })();

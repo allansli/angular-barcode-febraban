@@ -1,3 +1,6 @@
+/* Host BarcodeInterleaved2of5.ttf at ../fonts/ relative to this file.
+   npm tarballs do not include the font (see NOTICE). Copy it from git for
+   local demos, or supply a font you are licensed to use. */
 @font-face {
     font-family: "BarcodeInterleaved2of5";
     src: url("../fonts/BarcodeInterleaved2of5.ttf") format("truetype");

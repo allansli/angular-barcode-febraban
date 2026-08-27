@@ -64,7 +64,8 @@ Invalid input renders as an empty barcode.
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
-The bundled TrueType font is **not** covered by MIT. See [`packages/core/NOTICE`](../core/NOTICE).
+The CSS `@font-face` expects a TTF you host yourself; npm does not ship the font.
+See [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building the package
 
@@ -78,4 +79,4 @@ Produces `dist/index.es.js` (ESM) and `dist/index.cjs.js` (CJS) via Vite.
 
 ## License
 
-MIT © Allan Martins de Paula (source code). The ITF font shipped by the core package is not licensed under MIT.
+MIT © Allan Martins de Paula (source code). The ITF font in git is not licensed under MIT and is not published to npm.

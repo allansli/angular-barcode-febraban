@@ -22,7 +22,7 @@
     "src/index.esm.js",
     "src/index.d.ts",
     "src/generate-barcode-sequence.js",
-    "assets",
+    "assets/css",
     "NOTICE"
   ],
   "scripts": {

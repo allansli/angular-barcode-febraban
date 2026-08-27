@@ -86,7 +86,21 @@ generateBarcodeSequence("0".repeat(47)); // linha digitável length
 
 ## CSS & Font
 
-Include the bundled CSS so the encoded string renders with the ITF font:
+Published npm packages include the CSS only. They do **not** include
+`BarcodeInterleaved2of5.ttf` (no redistributable license; see [NOTICE](./NOTICE)).
+
+The CSS still references the historical relative path:
+
+```css
+@font-face {
+  font-family: "BarcodeInterleaved2of5";
+  src: url("../fonts/BarcodeInterleaved2of5.ttf") format("truetype");
+}
+```
+
+Host a copy of that file (from this git tree for local demos, or a font you
+are licensed to use) at `fonts/BarcodeInterleaved2of5.ttf` next to `css/`,
+or override `@font-face` in your app.
 
 ```html
 <link rel="stylesheet" href="node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css" />
@@ -102,10 +116,11 @@ import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 <div class="barcodei2of5"><!-- sequence goes here --></div>
 ```
 
-The font file has **no license in this repository**. MIT covers the JavaScript only — see [NOTICE](./NOTICE).
+GitHub Pages demos load the TTF from `packages/core/assets/fonts/` in this repo.
 
 ---
 
 ## License
 
-MIT © Allan Martins de Paula (source code). The bundled TrueType font is **not** covered by MIT; see [NOTICE](./NOTICE).
+MIT © Allan Martins de Paula (source code). The TrueType font in git is **not**
+covered by MIT and is **not** published to npm; see [NOTICE](./NOTICE).

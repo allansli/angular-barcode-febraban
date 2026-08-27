@@ -16,12 +16,19 @@ npm install @allansli/angular-barcode-febraban
 
 ## Setup
 
-**1. Include scripts and styles**
+**1. Include core, then this package, then styles**
 
 ```html
+<script src="node_modules/@allansli/barcode-febraban-core/src/generate-barcode-sequence.js"></script>
 <script src="node_modules/@allansli/angular-barcode-febraban/dist/angular-barcode-febraban.min.js"></script>
-<link rel="stylesheet" href="node_modules/@allansli/angular-barcode-febraban/dist/css/barcode.css" />
+<link rel="stylesheet" href="node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css" />
 ```
+
+Core is a real npm dependency (not concatenated into the AngularJS bundle).
+Load it first so `barcodeFebrabanCore` exists, or `require` it in Node.
+
+The CSS `@font-face` points at `../fonts/BarcodeInterleaved2of5.ttf`. npm does
+not ship that file; host it yourself (see [`NOTICE`](./NOTICE)).
 
 **2. Add the module to your app**
 
@@ -46,7 +53,7 @@ The directive uses an isolate scope. Invalid input (including a valid value that
 |---|---|---|
 | `barcode-sequence` | string | Even-length digit string |
 
-The bundled TrueType font is **not** covered by MIT. See [`packages/core/NOTICE`](../core/NOTICE).
+The TrueType font is **not** covered by MIT and is **not** in the npm tarball. See [`NOTICE`](./NOTICE) and [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building from source
 
@@ -65,4 +72,4 @@ npm test
 
 ## License
 
-MIT © Allan Martins de Paula (source code). The ITF font shipped with this package is not licensed under MIT.
+MIT © Allan Martins de Paula (source code). The ITF font in git is not licensed under MIT and is not published to npm.

@@ -177,11 +177,10 @@
 
   <!-- Core UMD — exposes barcodeFebrabanCore global -->
   <script src="../packages/core/src/generate-barcode-sequence.js"></script>
-  <!-- React 18 + ReactDOM (development UMD builds) -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <!-- Babel standalone — compiles JSX in the browser for this demo -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Pinned GitHub Pages demo CDNs (not package runtime deps). -->
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.10/babel.min.js"></script>
 
   <script type="text/babel">
     // ---------------------------------------------------------------------------

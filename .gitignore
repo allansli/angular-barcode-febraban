@@ -12,6 +12,8 @@ packages/*/lib/
 packages/angularjs/coverage/
 packages/react/src/*.map
 
+/dist/
+
 # OS
 .DS_Store
 Thumbs.db

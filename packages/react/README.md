@@ -39,7 +39,9 @@ Invalid input (odd length, non-digits, empty, 47-digit linha digitável) renders
 import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
-The bundled TrueType font is **not** covered by this package’s MIT license. See [`packages/core/NOTICE`](../core/NOTICE).
+The CSS `@font-face` expects `BarcodeInterleaved2of5.ttf` next to the stylesheet
+(`../fonts/`). npm does **not** ship that file. Host a copy from git for demos,
+or a font you are licensed to use. See [`packages/core/NOTICE`](../core/NOTICE).
 
 ## Building the package
 
@@ -53,4 +55,4 @@ Produces `dist/index.esm.js` (ESM) and `dist/index.cjs.js` (CJS) from the JSX so
 
 ## License
 
-MIT © Allan Martins de Paula (source code). The ITF font shipped by the core package is not licensed under MIT.
+MIT © Allan Martins de Paula (source code). The ITF font in git is not licensed under MIT and is not published to npm.

@@ -26,8 +26,8 @@ module.exports = function (config) {
       require("karma-coverage")
     ],
 
-    // The core library must be loaded before the AngularJS source files
-    // so that barcodeFebrabanCore global is available to utils.js.
+    // Core is a workspace package. Load its UMD first so utils.js can use
+    // the barcodeFebrabanCore global (require() is unavailable in Karma).
     files: [
       path.join(__dirname, "../core/src/generate-barcode-sequence.js"),
       resolveFromPackage("angular/angular.js"),

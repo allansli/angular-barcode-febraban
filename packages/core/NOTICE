@@ -4,13 +4,18 @@
 The JavaScript source in this package is licensed under the MIT License.
 See the repository LICENSE file.
 
-Font
-----
-assets/fonts/BarcodeInterleaved2of5.ttf is a TrueType font. Its name table
-identifies it as "Code 2/5 Interleaved", Copyright 2000. This package does
-not include a license grant for that font.
+Font (not MIT, not in the npm tarball)
+--------------------------------------
+The git tree contains BarcodeInterleaved2of5.ttf under assets/fonts/ for
+historical and demo use. npm packages do not include that file.
 
-The MIT license applies to the library source code only. It does not grant
-rights to use, copy, or redistribute the font. Use or ship the font only if
-you have a valid license from the copyright holder, or replace it with a font
-you are licensed to use.
+Name table of the git file (verified): Copyright 2000; family
+"Code 2/5 Interleaved"; version "1.00; June 21, 2000"; no license name IDs.
+
+A nearby shareware family from Chaos Microsystems Inc. (1999) is documented
+at https://luc.devroye.org/fonts-29893.html — "All rights reserved", not MIT.
+This file is not confirmed to be that font (different name, year, size).
+
+Host the TTF yourself next to the CSS (`../fonts/BarcodeInterleaved2of5.ttf`
+relative to assets/css/barcode.css), or override @font-face. See the
+repository NOTICE.
