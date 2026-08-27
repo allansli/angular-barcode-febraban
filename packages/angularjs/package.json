@@ -5,7 +5,7 @@
   "main": "dist/angular-barcode-febraban.min.js",
   "scripts": {
     "build": "gulp deploy",
-    "test": "node_modules/karma/bin/karma start karma.conf.js --single-run"
+    "test": "karma start karma.conf.js --single-run"
   },
   "keywords": [
     "barcode",

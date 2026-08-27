@@ -1,4 +1,15 @@
 // Karma configuration for @allansli/angular-barcode-febraban
+const path = require("path");
+
+function resolveFromPackage(id) {
+  // npm workspaces hoist packages to the monorepo root node_modules.
+  // Resolve from this package first, then the repo root, so tests work
+  // both in a nested install and in a hoisted workspace.
+  return require.resolve(id, {
+    paths: [__dirname, path.join(__dirname, "../..")]
+  });
+}
+
 module.exports = function (config) {
   config.set({
 
@@ -6,12 +17,21 @@ module.exports = function (config) {
 
     frameworks: ["jasmine"],
 
+    // Require plugins explicitly. Karma's auto-discovery looks in
+    // ./node_modules relative to this package, which does not exist
+    // when dependencies are hoisted to the workspace root.
+    plugins: [
+      require("karma-jasmine"),
+      require("karma-chrome-launcher"),
+      require("karma-coverage")
+    ],
+
     // The core library must be loaded before the AngularJS source files
     // so that barcodeFebrabanCore global is available to utils.js.
     files: [
-      "../core/src/index.js",
-      "node_modules/angular/angular.js",
-      "node_modules/angular-mocks/angular-mocks.js",
+      path.join(__dirname, "../core/src/index.js"),
+      resolveFromPackage("angular/angular.js"),
+      resolveFromPackage("angular-mocks/angular-mocks.js"),
       "src/angular-barcode-febraban.module.js",
       "src/angular-barcode-febraban.utils.js",
       "src/angular-barcode-febraban.directive.js",
