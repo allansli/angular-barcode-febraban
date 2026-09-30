@@ -67,9 +67,9 @@ npm run test:all
 
 The recommended release is a single GitHub Release. The workflow does not bump versions and does not publish from a pull request.
 
-### Dry-run before `NPM_TOKEN`
+### Dry-run
 
-Run this before adding the `NPM_TOKEN` secret and before publishing a release.
+Run this before publishing a release.
 
 1. Open **Actions**.
 2. Select **Publish all packages**.
@@ -79,13 +79,9 @@ Run this before adding the `NPM_TOKEN` secret and before publishing a release.
 
 That run uses the same tests and builds as a release, then `npm publish --access public --dry-run` for each package. Angular uses `npm publish ./dist --access public --dry-run`. It does not upload, does not read `NPM_TOKEN`, and does not pass `--provenance`.
 
-Unchecking **dry_run** publishes to npm for real (`--provenance` and `NPM_TOKEN`), the same as a `barcode-febraban@v*` release.
+Unchecking **dry_run** publishes to npm for real with Trusted Publishing (OIDC) and `--provenance`, the same as a `barcode-febraban@v*` release. That path does not use `NPM_TOKEN`.
 
-GitHub shows **Run workflow** after this file is on the default branch. A pull request that touches this workflow runs the same dry-run, which is the check to watch on PR #10 before merge. Until the button is available, you can also dispatch the branch that contains the workflow:
-
-```bash
-gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f dry_run=true
-```
+GitHub shows **Run workflow** after this file is on the default branch. A pull request to `master` that changes `packages/`, the root lockfile, `scripts/`, or this workflow runs the same dry-run. That is the CI check for those changes.
 
 ### Release
 
@@ -95,13 +91,11 @@ gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f
 
    `core` → `angularjs` → `react` → `vue` → `angular`
 
-   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from that folder (`npm publish ./dist --access public --provenance` in `packages/angular`). Every package uses `npm publish --access public --provenance`, `NODE_AUTH_TOKEN` from the `NPM_TOKEN` repository secret, and `id-token: write` for npm provenance. Packages are published on the `latest` dist-tag.
+   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from that folder (`npm publish ./dist --access public --provenance` in `packages/angular`). Every package is installed and built on Node 20, then published with `npm publish --access public --provenance` on Node 24 after `npm install -g npm@latest`. Authentication is npm Trusted Publishing (OIDC): each publish job has `id-token: write` and does not use `NPM_TOKEN`. Packages are published on the `latest` dist-tag.
 
-`NPM_TOKEN` must be able to publish all five `@allansli/*` packages. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
+On each package, add a GitHub Actions trusted publisher for user `allansli`, repository `angular-barcode-febraban`, workflow filename `publish-barcode-febraban.yml`, no environment, and allow `npm publish`. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
 
-A failed test, build, or publish stops the rest of the sequence. Re-run the failed job from the Actions run; jobs that already succeeded stay as they are. A version that is already on npm cannot be published again — bump it and cut a new `barcode-febraban@vX.Y.Z` release, or publish one leftover package with a per-package tag.
-
-Per-package releases still work. A published release tagged `core@v*`, `angularjs@v*`, `react@v*`, `vue@v*`, or `angular@v*` publishes only that package through its existing workflow. Use `barcode-febraban@vX.Y.Z` when the whole set should go out together.
+A failed test, build, or publish stops the rest of the sequence. Re-run the failed job from the Actions run; jobs that already succeeded stay as they are. A version that is already on npm cannot be published again — bump it and cut a new `barcode-febraban@vX.Y.Z` release. Releases are published together with the tag `barcode-febraban@vX.Y.Z`.
 
 Local dry run (packs and prints the publish plan, does not upload):
 

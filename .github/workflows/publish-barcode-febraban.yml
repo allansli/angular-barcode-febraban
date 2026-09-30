@@ -5,18 +5,26 @@
 #   Example: barcode-febraban@v1.0.0. This path publishes for real.
 # - workflow_dispatch with input dry_run (boolean, default true).
 #   Checked: same tests and builds, then npm publish --dry-run.
-#   No NPM_TOKEN and no --provenance. Uncheck dry_run only for a real publish.
-# - pull_request: always a dry-run (same commands). GitHub only shows
-#   Run workflow once this file is on the default branch, so the pull
-#   request run is how to exercise the workflow before that.
+#   Tokenless, no --provenance. Uncheck dry_run only for a real publish.
+# - pull_request to master or main: always a dry-run (same tests and
+#   builds, then npm publish --dry-run) when packages, the lockfile,
+#   scripts, or this workflow change. That is the monorepo PR check.
+#   GitHub only shows Run workflow once this file is on the default branch.
+#
+# Real publishes use npm Trusted Publishing (OIDC), not secrets.NPM_TOKEN.
+# Publish jobs keep id-token: write. Install and build stay on Node 20
+# (gulp-cssmin's clean-css calls util.isRegExp, removed in Node 24).
+# The real npm publish step then switches to Node 24 and installs npm@latest
+# (OIDC needs npm >= 11.5.1). setup-node registry-url is omitted: it writes
+# //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}, and an empty token
+# makes npm skip the OIDC exchange.
+# Trusted publisher on npm must list GitHub user allansli, repo
+# angular-barcode-febraban, workflow publish-barcode-febraban.yml (filename
+# only), and allow npm publish. Leave environment name empty.
 #
 # Tests and builds every package, then publishes in order:
 #   core → angularjs → react → vue → angular
 # A failed job skips every job after it.
-#
-# Per-package tags (core@v*, angularjs@v*, react@v*, vue@v*, angular@v*)
-# stay on their own workflows. Those prefixes do not match this tag, and
-# this tag does not match those prefixes.
 #
 # Package.json versions are published as committed. This workflow does not
 # bump them. Angular is published from the ng-packagr dist/ directory.
@@ -34,7 +42,12 @@ on:
         default: true
         required: false
   pull_request:
+    branches: [master, main]
     paths:
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/**"
       - ".github/workflows/publish-barcode-febraban.yml"
 
 permissions:
@@ -92,6 +105,8 @@ jobs:
           echo "Release tag: ${RELEASE_TAG}"
           if [[ "${DRY_RUN}" == "true" ]]; then
             echo "Dry run: npm publish --dry-run. Nothing is uploaded. NPM_TOKEN is not used."
+          else
+            echo "Real publish uses npm Trusted Publishing (OIDC). NPM_TOKEN is not used."
           fi
           echo "Publishing the versions already committed in package.json. This workflow does not bump them."
           echo "## ${RELEASE_TAG}" >> "$GITHUB_STEP_SUMMARY"
@@ -196,16 +211,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
-        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-          cache: npm
-
-      - name: Setup Node.js (dry-run)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -222,15 +229,39 @@ jobs:
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
 
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Upgrade npm for OIDC trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        run: |
+          set -euo pipefail
+          npm install -g npm@latest
+          ver="$(npm --version)"
+          echo "npm ${ver}"
+          node -e '
+            const [maj, min, pat] = process.argv[1].split(".").map((n) => parseInt(n, 10));
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is below 11.5.1; OIDC trusted publishing will not run.");
+              process.exit(1);
+            }
+          ' "$ver"
+
       - name: Publish @allansli/barcode-febraban-core
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         working-directory: packages/core
         run: |
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          # OIDC (id-token: write) authenticates this publish. Trusted
+          # publishing also attests provenance; --provenance keeps that explicit.
           npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-angularjs:
     name: Publish angularjs
@@ -245,16 +276,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
-        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-          cache: npm
-
-      - name: Setup Node.js (dry-run)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -279,15 +302,39 @@ jobs:
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
 
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Upgrade npm for OIDC trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        run: |
+          set -euo pipefail
+          npm install -g npm@latest
+          ver="$(npm --version)"
+          echo "npm ${ver}"
+          node -e '
+            const [maj, min, pat] = process.argv[1].split(".").map((n) => parseInt(n, 10));
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is below 11.5.1; OIDC trusted publishing will not run.");
+              process.exit(1);
+            }
+          ' "$ver"
+
       - name: Publish @allansli/angular-barcode-febraban
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         working-directory: packages/angularjs
         run: |
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          # OIDC (id-token: write) authenticates this publish. Trusted
+          # publishing also attests provenance; --provenance keeps that explicit.
           npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-react:
     name: Publish react
@@ -302,16 +349,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
-        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-          cache: npm
-
-      - name: Setup Node.js (dry-run)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -336,15 +375,39 @@ jobs:
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
 
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Upgrade npm for OIDC trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        run: |
+          set -euo pipefail
+          npm install -g npm@latest
+          ver="$(npm --version)"
+          echo "npm ${ver}"
+          node -e '
+            const [maj, min, pat] = process.argv[1].split(".").map((n) => parseInt(n, 10));
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is below 11.5.1; OIDC trusted publishing will not run.");
+              process.exit(1);
+            }
+          ' "$ver"
+
       - name: Publish @allansli/react-barcode-febraban
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         working-directory: packages/react
         run: |
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          # OIDC (id-token: write) authenticates this publish. Trusted
+          # publishing also attests provenance; --provenance keeps that explicit.
           npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-vue:
     name: Publish vue
@@ -359,16 +422,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
-        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-          cache: npm
-
-      - name: Setup Node.js (dry-run)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -393,15 +448,39 @@ jobs:
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
 
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Upgrade npm for OIDC trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        run: |
+          set -euo pipefail
+          npm install -g npm@latest
+          ver="$(npm --version)"
+          echo "npm ${ver}"
+          node -e '
+            const [maj, min, pat] = process.argv[1].split(".").map((n) => parseInt(n, 10));
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is below 11.5.1; OIDC trusted publishing will not run.");
+              process.exit(1);
+            }
+          ' "$ver"
+
       - name: Publish @allansli/vue-barcode-febraban
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         working-directory: packages/vue
         run: |
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          # OIDC (id-token: write) authenticates this publish. Trusted
+          # publishing also attests provenance; --provenance keeps that explicit.
           npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-angular:
     name: Publish angular
@@ -416,16 +495,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
-        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org
-          cache: npm
-
-      - name: Setup Node.js (dry-run)
-        if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -456,6 +527,30 @@ jobs:
           # unrelated npm package named dist.
           npm publish ./dist --access public --dry-run
 
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Upgrade npm for OIDC trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        run: |
+          set -euo pipefail
+          npm install -g npm@latest
+          ver="$(npm --version)"
+          echo "npm ${ver}"
+          node -e '
+            const [maj, min, pat] = process.argv[1].split(".").map((n) => parseInt(n, 10));
+            const ok = maj > 11 || (maj === 11 && (min > 5 || (min === 5 && pat >= 1)));
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is below 11.5.1; OIDC trusted publishing will not run.");
+              process.exit(1);
+            }
+          ' "$ver"
+
       - name: Publish @allansli/ng-barcode-febraban from dist/
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         working-directory: packages/angular
@@ -464,6 +559,6 @@ jobs:
           node -e 'const p=require("./dist/package.json"); console.log("Publishing " + p.name + "@" + p.version + " from dist/")'
           # ./dist is the ng-packagr folder. A bare "dist" argument is the
           # unrelated npm package named dist.
+          # OIDC (id-token: write) authenticates this publish. Trusted
+          # publishing also attests provenance; --provenance keeps that explicit.
           npm publish ./dist --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
