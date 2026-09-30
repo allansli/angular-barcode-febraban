@@ -1,0 +1,358 @@
+# Recommended release path for the whole monorepo.
+#
+# Trigger: GitHub Release published, tag barcode-febraban@vX.Y.Z (semver after v).
+# Example: barcode-febraban@v1.0.0
+#
+# Tests and builds every package, then publishes in order:
+#   core → angularjs → react → vue → angular
+# A failed job skips every job after it.
+#
+# Per-package tags (core@v*, angularjs@v*, react@v*, vue@v*, angular@v*)
+# stay on their own workflows. Those prefixes do not match this tag, and
+# this tag does not match those prefixes.
+#
+# Package.json versions are published as committed. This workflow does not
+# bump them. Angular is published from the ng-packagr dist/ directory.
+
+name: Publish all packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  actions: write
+
+concurrency:
+  group: npm-publish-barcode-febraban
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release tag
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.release.tag_name, 'barcode-febraban@v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Require barcode-febraban@vX.Y.Z
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          prefix="barcode-febraban@v"
+          case "$RELEASE_TAG" in
+            "$prefix"*) ;;
+            *)
+              echo "::error::Expected ${prefix}X.Y.Z but got ${RELEASE_TAG}"
+              exit 1
+              ;;
+          esac
+          version="${RELEASE_TAG#"$prefix"}"
+          semver_re='^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$'
+          if [[ ! "$version" =~ $semver_re ]]; then
+            echo "::error::Tag version '${version}' is not semver. Use ${prefix}X.Y.Z (example: barcode-febraban@v1.0.0)."
+            exit 1
+          fi
+          echo "Release tag ${RELEASE_TAG} matches semver ${version}."
+
+      - name: Show package.json versions
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "Release tag: ${RELEASE_TAG}"
+          echo "Publishing the versions already committed in package.json. This workflow does not bump them."
+          echo "## ${RELEASE_TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Versions below are published as committed. Align them with this release before publishing it." >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Package | Version |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          node <<'EOF'
+          const fs = require("fs");
+          const keys = ["core", "angularjs", "react", "vue", "angular"];
+          for (const key of keys) {
+            const pkg = JSON.parse(fs.readFileSync(`packages/${key}/package.json`, "utf8"));
+            if (!pkg.name || !pkg.version) {
+              console.error(`Missing name or version in packages/${key}/package.json`);
+              process.exit(1);
+            }
+            console.log(`${key}\t${pkg.name}@${pkg.version}`);
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `| \`${pkg.name}\` | \`${pkg.version}\` |\n`);
+          }
+          EOF
+
+  test:
+    name: Test & build (${{ matrix.name }})
+    needs: validate
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.validate.result == 'success' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: core
+            dir: packages/core
+            build: "false"
+            build_before_test: "false"
+            verify: ""
+          - name: angularjs
+            dir: packages/angularjs
+            build: "true"
+            build_before_test: "true"
+            verify: "test -f dist/angular-barcode-febraban.min.js && test -d dist/css"
+          - name: react
+            dir: packages/react
+            build: "true"
+            build_before_test: "false"
+            verify: "test -f dist/index.esm.js && test -f dist/index.cjs.js"
+          - name: vue
+            dir: packages/vue
+            build: "true"
+            build_before_test: "false"
+            verify: "test -f dist/index.es.js && test -f dist/index.cjs.js"
+          - name: angular
+            dir: packages/angular
+            build: "true"
+            build_before_test: "false"
+            verify: "test -f dist/package.json && test -f dist/esm2022/allansli-ng-barcode-febraban.mjs && test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs && test -f dist/index.d.ts"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build before tests
+        if: matrix.build_before_test == 'true'
+        working-directory: ${{ matrix.dir }}
+        run: npm run build
+
+      - name: Run tests
+        working-directory: ${{ matrix.dir }}
+        run: npm test
+        env:
+          CHROMIUM_FLAGS: ${{ matrix.name == 'angularjs' && '--no-sandbox --disable-gpu --disable-dev-shm-usage' || '' }}
+
+      - name: Build
+        if: matrix.build == 'true' && matrix.build_before_test != 'true'
+        working-directory: ${{ matrix.dir }}
+        run: npm run build
+
+      - name: Verify build output
+        if: matrix.verify != ''
+        working-directory: ${{ matrix.dir }}
+        run: ${{ matrix.verify }}
+
+  publish-core:
+    name: Publish core
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.test.result == 'success' }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Publish @allansli/barcode-febraban-core
+        working-directory: packages/core
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-angularjs:
+    name: Publish angularjs
+    needs: publish-core
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-core.result == 'success' }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Gulp)
+        working-directory: packages/angularjs
+        run: npm run build
+
+      - name: Verify dist output
+        working-directory: packages/angularjs
+        run: test -f dist/angular-barcode-febraban.min.js && test -d dist/css
+
+      - name: Publish @allansli/angular-barcode-febraban
+        working-directory: packages/angularjs
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-react:
+    name: Publish react
+    needs: publish-angularjs
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-angularjs.result == 'success' }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Rollup)
+        working-directory: packages/react
+        run: npm run build
+
+      - name: Verify dist output
+        working-directory: packages/react
+        run: test -f dist/index.esm.js && test -f dist/index.cjs.js
+
+      - name: Publish @allansli/react-barcode-febraban
+        working-directory: packages/react
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-vue:
+    name: Publish vue
+    needs: publish-react
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-react.result == 'success' }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (Vite)
+        working-directory: packages/vue
+        run: npm run build
+
+      - name: Verify dist output
+        working-directory: packages/vue
+        run: test -f dist/index.es.js && test -f dist/index.cjs.js
+
+      - name: Publish @allansli/vue-barcode-febraban
+        working-directory: packages/vue
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Publishing " + p.name + "@" + p.version)'
+          npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  publish-angular:
+    name: Publish angular
+    needs: publish-vue
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-vue.result == 'success' }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Install dependencies (monorepo root)
+        run: npm ci
+
+      - name: Build (ng-packagr)
+        working-directory: packages/angular
+        run: npm run build
+
+      - name: Verify dist output
+        working-directory: packages/angular
+        run: |
+          test -f dist/package.json
+          test -f dist/esm2022/allansli-ng-barcode-febraban.mjs
+          test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs
+          test -f dist/index.d.ts
+
+      - name: Publish @allansli/ng-barcode-febraban from dist/
+        working-directory: packages/angular
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./dist/package.json"); console.log("Publishing " + p.name + "@" + p.version + " from dist/")'
+          npm publish dist/ --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

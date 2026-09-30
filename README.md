@@ -65,14 +65,29 @@ npm run test:all
 
 ## Publishing
 
-`scripts/publish-all.js` publishes in dependency order (core first) and **aborts if core fails**. Angular is published from ng-packagr `dist/`. On GitHub Actions the script adds `--provenance`, matching the per-package workflows.
+The recommended release is a single GitHub Release. The workflow does not bump versions and does not publish from a pull request.
+
+1. Set `version` in each `package.json` (`packages/core`, `packages/angularjs`, `packages/react`, `packages/vue`, `packages/angular`) to the version you intend to publish. Commit those versions before cutting the release.
+2. Publish a GitHub Release whose tag is `barcode-febraban@v` plus [semver](https://semver.org/). Example: `barcode-febraban@v1.0.0`. The tag names that release cut and should align with it. Each package is published at the version already in its `package.json` (those versions can differ). Draft releases do not trigger publishing.
+3. [`.github/workflows/publish-barcode-febraban.yml`](.github/workflows/publish-barcode-febraban.yml) runs the tests and builds, then publishes in this order:
+
+   `core` → `angularjs` → `react` → `vue` → `angular`
+
+   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from `dist/` (`npm publish dist/ --access public --provenance`). Every package uses `npm publish --access public --provenance`, `NODE_AUTH_TOKEN` from the `NPM_TOKEN` repository secret, and `id-token: write` for npm provenance. Packages are published on the `latest` dist-tag.
+
+`NPM_TOKEN` must be able to publish all five `@allansli/*` packages. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
+
+A failed test, build, or publish stops the rest of the sequence. Re-run the failed job from the Actions run; jobs that already succeeded stay as they are. A version that is already on npm cannot be published again — bump it and cut a new `barcode-febraban@vX.Y.Z` release, or publish one leftover package with a per-package tag.
+
+Per-package releases still work. A published release tagged `core@v*`, `angularjs@v*`, `react@v*`, `vue@v*`, or `angular@v*` publishes only that package through its existing workflow. Use `barcode-febraban@vX.Y.Z` when the whole set should go out together.
+
+Local dry run (packs and prints the publish plan, does not upload):
 
 ```bash
 npm run publish:dry-run
-npm run publish:all
 ```
 
-Do not use this to publish from a pull request. Releases are tagged `core@v*`, `react@v*`, `vue@v*`, `angular@v*`, `angularjs@v*`.
+`npm run publish:all` publishes from a machine in the same order and stops at the first failure. Provenance is attached when that script runs on GitHub Actions. Prefer the release workflow.
 
 ---
 

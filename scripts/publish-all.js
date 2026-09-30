@@ -10,9 +10,14 @@
  *   node scripts/publish-all.js --tag next          # publish with a dist-tag
  *   node scripts/publish-all.js core react          # publish specific packages only
  *
- * Core is published first. If core fails, remaining packages are aborted.
- * Angular is published from ng-packagr's dist/ directory.
- * Provenance is added automatically on GitHub Actions (same as the CI jobs).
+ * Publish order: core, angularjs, react, vue, angular.
+ * If any package fails, remaining packages are aborted.
+ * Packages with a build script are built first. Angular is published from
+ * ng-packagr's dist/ directory. Provenance is added on GitHub Actions.
+ *
+ * The recommended release path is .github/workflows/publish-barcode-febraban.yml
+ * (GitHub Release tag barcode-febraban@vX.Y.Z). This script is the local
+ * equivalent for a dry run or a manual publish.
  */
 
 "use strict";
@@ -111,8 +116,17 @@ packages.forEach((p) => {
 console.log();
 
 let published = 0;
-let failed = 0;
 const results = [];
+
+function abortRemaining(index, label) {
+  const remaining = packages.slice(index + 1).map((p) => p.key);
+  if (remaining.length > 0) {
+    console.error(`  ${label} failed; aborting remaining: ${remaining.join(", ")}\n`);
+  } else {
+    console.error(`  ${label} failed.\n`);
+  }
+  process.exit(1);
+}
 
 for (let i = 0; i < packages.length; i++) {
   const pkg = packages[i];
@@ -124,13 +138,7 @@ for (let i = 0; i < packages.length; i++) {
   } catch (err) {
     console.error(`  [${i + 1}/${packages.length}] ERROR: cannot read package.json in ${pkg.dir}`);
     console.error(`    ${err.message}\n`);
-    failed++;
-    results.push({ name: pkg.key, status: "error", error: err.message });
-    if (pkg.key === "core") {
-      console.error("  Core failed; aborting remaining packages.\n");
-      process.exit(1);
-    }
-    continue;
+    abortRemaining(i, pkg.key);
   }
 
   console.log(`  [${i + 1}/${packages.length}] ${pkgJson.name}@${pkgJson.version}`);
@@ -146,27 +154,17 @@ for (let i = 0; i < packages.length; i++) {
     results.push({ name: pkgJson.name, version: pkgJson.version, status: "ok" });
   } catch (err) {
     console.error(`    FAILED: ${err.message}\n`);
-    failed++;
-    results.push({ name: pkgJson.name, version: pkgJson.version, status: "failed", error: err.message });
-    if (pkg.key === "core") {
-      console.error("  Core failed; aborting remaining packages.\n");
-      process.exit(1);
-    }
+    abortRemaining(i, `${pkgJson.name}@${pkgJson.version}`);
   }
 }
 
 console.log("────────────────────────────────────────────────────────");
-console.log(`  Results: ${published} published, ${failed} failed`);
+console.log(`  Results: ${published} published, 0 failed`);
 console.log();
 
 results.forEach((r) => {
-  const icon = r.status === "ok" ? "✓" : "✗";
   const label = r.version ? `${r.name}@${r.version}` : r.name;
-  console.log(`  ${icon} ${label}${r.error ? " — " + r.error : ""}`);
+  console.log(`  ✓ ${label}`);
 });
 
 console.log();
-
-if (failed > 0) {
-  process.exit(1);
-}
