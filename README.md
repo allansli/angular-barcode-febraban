@@ -81,11 +81,7 @@ That run uses the same tests and builds as a release, then `npm publish --access
 
 Unchecking **dry_run** publishes to npm for real with Trusted Publishing (OIDC) and `--provenance`, the same as a `barcode-febraban@v*` release. That path does not use `NPM_TOKEN`.
 
-GitHub shows **Run workflow** after this file is on the default branch. A pull request that touches this workflow runs the same dry-run, which is the check to watch on PR #10 before merge. Until the button is available, you can also dispatch the branch that contains the workflow:
-
-```bash
-gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f dry_run=true
-```
+GitHub shows **Run workflow** after this file is on the default branch. A pull request to `master` that changes `packages/`, the root lockfile, `scripts/`, or this workflow runs the same dry-run. That is the CI check for those changes.
 
 ### Release
 
@@ -99,9 +95,7 @@ gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f
 
 On each package, add a GitHub Actions trusted publisher for user `allansli`, repository `angular-barcode-febraban`, workflow filename `publish-barcode-febraban.yml`, no environment, and allow `npm publish`. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
 
-A failed test, build, or publish stops the rest of the sequence. Re-run the failed job from the Actions run; jobs that already succeeded stay as they are. A version that is already on npm cannot be published again — bump it and cut a new `barcode-febraban@vX.Y.Z` release, or publish one leftover package with a per-package tag.
-
-Per-package releases still work. A published release tagged `core@v*`, `angularjs@v*`, `react@v*`, `vue@v*`, or `angular@v*` publishes only that package through its existing workflow, which still uses `NPM_TOKEN`. Use `barcode-febraban@vX.Y.Z` when the whole set should go out together.
+A failed test, build, or publish stops the rest of the sequence. Re-run the failed job from the Actions run; jobs that already succeeded stay as they are. A version that is already on npm cannot be published again — bump it and cut a new `barcode-febraban@vX.Y.Z` release. Releases are published together with the tag `barcode-febraban@vX.Y.Z`.
 
 Local dry run (packs and prints the publish plan, does not upload):
 
