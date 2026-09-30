@@ -1,22 +1,20 @@
 # @allansli/ng-barcode-febraban
 
-Angular 15+ **standalone** component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
+Draw the barcode on a **Brazilian boleto** in Angular. That barcode is **ITF (Interleaved 2 of 5)**, the symbology **Febraban** uses. `@allansli/ng-barcode-febraban` is an Angular 15+ standalone component: it encodes an even-length digit string (usually the 44-digit código de barras) and renders it with `BarcodeInterleaved2of5.ttf`.
 
-Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
+It does not convert a 47-digit linha digitável, and it does not compute the módulo-11 DAC. Encoding is [`@allansli/barcode-febraban-core`](../core/README.md). This package is **Angular**, not AngularJS. AngularJS 1.x is [`@allansli/angular-barcode-febraban`](../angularjs/README.md).
 
----
+Sibling packages: [`@allansli/react-barcode-febraban`](../react/README.md), [`@allansli/vue-barcode-febraban`](../vue/README.md).
 
-## Installation
+## Install
 
 ```bash
 npm install @allansli/ng-barcode-febraban
 ```
 
-Core is a runtime dependency of this package (no extra install).
+`@allansli/barcode-febraban-core` is a dependency. Peers: `@angular/core` and `@angular/common` `>=15.0.0`.
 
-## Setup
-
-**Standalone component (Angular 15+)**
+## Minimal example
 
 ```typescript
 import { Component } from "@angular/core";
@@ -25,24 +23,39 @@ import { BarcodeFebrabanComponent } from "@allansli/ng-barcode-febraban";
 @Component({
   standalone: true,
   imports: [BarcodeFebrabanComponent],
-  template: `<barcode-febraban [sequence]="myBarcodeSequence"></barcode-febraban>`
+  template: `<barcode-febraban [sequence]="codigoDeBarras"></barcode-febraban>`
 })
 export class AppComponent {
-  myBarcodeSequence = "1234567890";
+  codigoDeBarras = "1234567890";
 }
 ```
 
-**NgModule apps** can import `BarcodeFebrabanModule`, which re-exports the same standalone component.
-
-**CSS** — in `angular.json` styles, or:
+Load the core CSS (and host the TTF yourself; npm does not ship the font):
 
 ```css
 @import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 ```
 
+## When to use
+
+- The app is **Angular 15+** and you need a **Brazilian boleto ITF** barcode (Febraban / Interleaved 2 of 5).
+- You already have an **even-length digit string** and will draw it with **`BarcodeInterleaved2of5.ttf`**.
+
+## When not to use
+
+- **EAN**, **UPC**, **Code 128**, QR, or any symbology other than ITF.
+- You still need to turn a **linha digitável** (47 digits) into a código de barras, or to calculate the **DAC**.
+- The app is **AngularJS 1.x** (`@allansli/angular-barcode-febraban`), React, Vue, or plain JS.
+
+## NgModule and static attributes
+
+**NgModule apps** can import `BarcodeFebrabanModule`, which re-exports the same standalone component.
+
+**CSS** — in `angular.json` styles, or the `@import` in the minimal example.
+
 ```html
 <barcode-febraban sequence="1234567890"></barcode-febraban>
-<barcode-febraban [sequence]="myBarcodeSequence"></barcode-febraban>
+<barcode-febraban [sequence]="codigoDeBarras"></barcode-febraban>
 ```
 
 ---

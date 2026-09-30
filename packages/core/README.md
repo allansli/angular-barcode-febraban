@@ -1,8 +1,46 @@
 # @allansli/barcode-febraban-core
 
-Font encoder for **`BarcodeInterleaved2of5.ttf`**. It turns an even-length string of digits into the character sequence that font renders as an ITF (Interleaved 2 of 5) barcode.
+Draw the barcode on a **Brazilian boleto**. That barcode is **ITF (Interleaved 2 of 5)**, the symbology **Febraban** uses for the código de barras. `@allansli/barcode-febraban-core` is the vanilla JavaScript encoder: it turns an even-length digit string into the character sequence that `BarcodeInterleaved2of5.ttf` renders as the bars.
 
-This is **not** a Febraban boleto engine:
+Pass digits you already have (the 44-digit código de barras is the usual input). This package does not parse a boleto, does not convert a 47-digit linha digitável into 44 digits, and does not compute the módulo-11 DAC.
+
+The framework packages call this function:
+
+- [`@allansli/angular-barcode-febraban`](../angularjs/README.md) — AngularJS 1.x
+- [`@allansli/react-barcode-febraban`](../react/README.md) — React
+- [`@allansli/vue-barcode-febraban`](../vue/README.md) — Vue 3
+- [`@allansli/ng-barcode-febraban`](../angular/README.md) — Angular 15+
+
+## Install
+
+```bash
+npm install @allansli/barcode-febraban-core
+```
+
+## Minimal example
+
+```js
+import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
+
+const sequence = generateBarcodeSequence("1234567890");
+console.log(sequence); // "(<RÆÜè)"
+```
+
+Put `sequence` in an element with class `barcodei2of5` after loading `assets/css/barcode.css`. Host `BarcodeInterleaved2of5.ttf` yourself; npm does not ship the font.
+
+## When to use
+
+- You need an **ITF (Interleaved 2 of 5)** barcode for a **Brazilian boleto** (Febraban código de barras).
+- The input is a **string of digits with even length**. A 44-digit código de barras qualifies.
+- You want **vanilla JS** (ESM, CommonJS, or a browser script) and will render with **`BarcodeInterleaved2of5.ttf`**.
+
+## When not to use
+
+- **EAN**, **UPC**, **Code 128**, QR, or any symbology other than ITF.
+- You have a **47-digit linha digitável** and need it converted. Odd length returns `""`. There is no 47→44 conversion.
+- You need the **DAC (módulo 11)** computed or checked.
+- You need a canvas or SVG barcode that does not use this font.
+- You want a component: use the React, Vue, Angular, or AngularJS package instead of calling this from a template by hand.
 
 | Expectation | This package |
 |---|---|
@@ -12,28 +50,11 @@ This is **not** a Febraban boleto engine:
 | Odd length | Returns `""` (no leading-zero pad) |
 | Non-digits / non-strings | Returns `""` (does not throw) |
 
-Framework wrappers (`react` / `vue` / `angular` / `angularjs`) call this function and render the same empty output for invalid input.
-
 ---
 
-## Installation
+## Other entry points
 
-```bash
-npm install @allansli/barcode-febraban-core
-```
-
----
-
-## Usage
-
-### ES Module (modern bundlers, Vite, Webpack, Rollup)
-
-```js
-import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
-
-const sequence = generateBarcodeSequence("1234567890");
-console.log(sequence); // "(<RÆÜè)"
-```
+The minimal example is ESM (Vite, Webpack, Rollup). CommonJS and a browser script use the same function.
 
 ### CommonJS (Node.js, older bundlers)
 

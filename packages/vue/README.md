@@ -1,20 +1,18 @@
 # @allansli/vue-barcode-febraban
 
-Vue 3 component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
+Draw the barcode on a **Brazilian boleto** in Vue 3. That barcode is **ITF (Interleaved 2 of 5)**, the symbology **Febraban** uses. `@allansli/vue-barcode-febraban` encodes an even-length digit string (usually the 44-digit código de barras) and renders it with `BarcodeInterleaved2of5.ttf`.
 
-Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
+It does not convert a 47-digit linha digitável, and it does not compute the módulo-11 DAC. Encoding is [`@allansli/barcode-febraban-core`](../core/README.md). Peer dependency: `vue` `>=3.0.0` (not Vue 2).
 
----
+Sibling packages: [`@allansli/react-barcode-febraban`](../react/README.md), [`@allansli/ng-barcode-febraban`](../angular/README.md) (Angular 15+), [`@allansli/angular-barcode-febraban`](../angularjs/README.md) (AngularJS 1.x).
 
-## Installation
+## Install
 
 ```bash
 npm install @allansli/vue-barcode-febraban
 ```
 
-## Usage
-
-### As a local component
+## Minimal example
 
 ```vue
 <template>
@@ -27,9 +25,20 @@ import "@allansli/barcode-febraban-core/assets/css/barcode.css";
 </script>
 ```
 
-`class` and `style` fall through onto the root element (do not pass `className`).
+`sequence` must be a string of digits with even length. `class` and `style` fall through onto the root element (do not pass `className`).
 
-### As a global plugin
+## When to use
+
+- The screen is **Vue 3** and you need a **Brazilian boleto ITF** barcode (Febraban / Interleaved 2 of 5).
+- You already have an **even-length digit string** and will draw it with **`BarcodeInterleaved2of5.ttf`**.
+
+## When not to use
+
+- **EAN**, **UPC**, **Code 128**, QR, or any symbology other than ITF.
+- You still need to turn a **linha digitável** (47 digits) into a código de barras, or to calculate the **DAC**.
+- The app is Vue 2, React, Angular, AngularJS, or plain JS — use that package (or `@allansli/barcode-febraban-core`) instead.
+
+## Global plugin
 
 The **default export is the plugin**, so `app.use(...)` works:
 
