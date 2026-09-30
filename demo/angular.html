@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Angular Demo — barcode-febraban</title>
+
+  <!-- Barcode font -->
+  <link rel="stylesheet" href="../packages/core/assets/css/barcode.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 48px 24px;
+    }
+
+    .page { max-width: 760px; margin: 0 auto; }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #64748b;
+      text-decoration: none;
+      font-size: 0.875rem;
+      margin-bottom: 36px;
+      transition: color 0.15s;
+    }
+    .back:hover { color: #e2e8f0; }
+
+    .header { margin-bottom: 36px; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(221,0,49,0.15);
+      color: #dd0031;
+      margin-bottom: 12px;
+    }
+
+    h1 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .subtitle { color: #94a3b8; font-size: 0.95rem; }
+
+    /* Build note banner */
+    .build-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: rgba(221,0,49,0.08);
+      border: 1px solid rgba(221,0,49,0.25);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 28px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .build-note .icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 1px; }
+
+    .build-note strong { color: #dd0031; }
+
+    .build-note code {
+      display: inline-block;
+      background: #0f172a;
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.8rem;
+      color: #e2e8f0;
+    }
+
+    /* Demo card */
+    .demo-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 32px;
+      margin-bottom: 28px;
+    }
+
+    .demo-card label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 10px;
+    }
+
+    .input-row { display: flex; gap: 12px; margin-bottom: 28px; }
+
+    .input-row input {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      font-family: 'Menlo', 'Consolas', monospace;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .input-row input:focus { border-color: #dd0031; }
+
+    .barcode-display {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 24px;
+      text-align: center;
+      min-height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .barcode-display .barcodei2of5 {
+      font-size: 100px;
+      line-height: 1;
+      color: #0f172a;
+    }
+
+    #empty-hint {
+      color: #94a3b8;
+      font-size: 0.875rem;
+    }
+
+    .code-card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #334155;
+      background: #162032;
+    }
+
+    .code-header span { font-size: 0.8rem; color: #64748b; }
+    .code-header .filename { font-family: 'Menlo', 'Consolas', monospace; color: #94a3b8; }
+
+    pre {
+      margin: 0;
+      padding: 24px;
+      overflow-x: auto;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e2e8f0;
+    }
+
+    .kw  { color: #f472b6; }
+    .str { color: #86efac; }
+    .cmt { color: #475569; font-style: italic; }
+    .tag { color: #60a5fa; }
+    .atr { color: #fbbf24; }
+    .fn  { color: #c084fc; }
+    .dec { color: #fb923c; }
+    .tp  { color: #38bdf8; }
+
+    .run-steps {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .run-steps .step-header {
+      padding: 16px 22px;
+      border-bottom: 1px solid #334155;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 20px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.5;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: rgba(221,0,49,0.15);
+      color: #dd0031;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-list code {
+      display: inline-block;
+      background: #0f172a;
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.78rem;
+      color: #e2e8f0;
+    }
+
+    .info-card {
+      background: rgba(221,0,49,0.06);
+      border: 1px solid rgba(221,0,49,0.18);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 0.875rem;
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+    .info-card strong { color: #dd0031; }
+  </style>
+</head>
+<body>
+
+  <div class="page">
+    <a class="back" href="index.html">← All demos</a>
+
+    <div class="header">
+      <div class="badge">Angular 15+</div>
+      <h1>Angular Demo</h1>
+      <p class="subtitle">
+        The <code>&lt;barcode-febraban&gt;</code> component binds via <code>@Input()</code>
+        and reacts to input changes via <code>ngOnChanges</code>.
+      </p>
+    </div>
+
+    <!-- Build note -->
+    <div class="build-note">
+      <span class="icon">⚠</span>
+      <div>
+        <strong>Angular requires a build step.</strong>
+        The interactive demo below uses
+        <code>@allansli/barcode-febraban-core</code> directly (no compilation needed)
+        so you can see the barcode in action right now. For the full Angular integration,
+        see the setup steps and code samples below.
+      </div>
+    </div>
+
+    <!-- Live interactive demo using core JS directly -->
+    <div class="demo-card">
+      <label>Barcode Sequence</label>
+      <div class="input-row">
+        <input
+          id="seq-input"
+          type="text"
+          value="1234567890"
+          placeholder="Enter numeric sequence (even length)"
+          maxlength="44"
+          oninput="updateBarcode(this.value)"
+        />
+      </div>
+
+      <label>Rendered Barcode (powered by <code>@allansli/barcode-febraban-core</code>)</label>
+      <div class="barcode-display" id="barcode-display">
+        <div class="barcodei2of5" id="barcode-output"></div>
+        <span id="empty-hint" style="display:none"></span>
+      </div>
+    </div>
+
+    <!-- Angular component TypeScript source -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">barcode-febraban.component.ts</span>
+        <span>Angular component</span>
+      </div>
+      <pre><span class="kw">import</span> { Component, Input, OnChanges, OnInit, SimpleChanges } <span class="kw">from</span> <span class="str">"@angular/core"</span>;
+<span class="kw">import</span> { CommonModule } <span class="kw">from</span> <span class="str">"@angular/common"</span>;
+<span class="kw">import</span> { generateBarcodeSequence } <span class="kw">from</span> <span class="str">"@allansli/barcode-febraban-core"</span>;
+
+<span class="dec">@Component</span>({
+  selector: <span class="str">"barcode-febraban"</span>,
+  standalone: <span class="kw">true</span>,
+  imports: [CommonModule],
+  template: <span class="str">`&lt;div class="barcodei2of5" [ngClass]="cssClass"&gt;{{ barcodeSequence }}&lt;/div&gt;`</span>
+})
+<span class="kw">export class</span> <span class="tp">BarcodeFebrabanComponent</span> <span class="kw">implements</span> <span class="tp">OnInit</span>, <span class="tp">OnChanges</span> {
+  <span class="dec">@Input</span>() sequence: <span class="tp">string</span> = <span class="str">""</span>;
+  <span class="dec">@Input</span>() cssClass: <span class="tp">string</span> = <span class="str">""</span>;
+  barcodeSequence: <span class="tp">string</span> = <span class="str">""</span>;
+
+  ngOnInit(): <span class="tp">void</span> { <span class="kw">this</span>.barcodeSequence = <span class="fn">generateBarcodeSequence</span>(<span class="kw">this</span>.sequence ?? <span class="str">""</span>); }
+  ngOnChanges(changes: <span class="tp">SimpleChanges</span>): <span class="tp">void</span> {
+    <span class="kw">if</span> (changes[<span class="str">"sequence"</span>]) {
+      <span class="kw">this</span>.barcodeSequence = <span class="fn">generateBarcodeSequence</span>(<span class="kw">this</span>.sequence ?? <span class="str">""</span>);
+    }
+  }
+}</pre>
+    </div>
+
+    <!-- Module setup -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">app.module.ts</span>
+        <span>Module import</span>
+      </div>
+      <pre><span class="kw">import</span> { NgModule } <span class="kw">from</span> <span class="str">"@angular/core"</span>;
+<span class="kw">import</span> { BarcodeFebrabanModule } <span class="kw">from</span> <span class="str">"@allansli/ng-barcode-febraban"</span>;
+
+<span class="dec">@NgModule</span>({
+  imports: [BarcodeFebrabanModule]
+})
+<span class="kw">export class</span> <span class="tp">AppModule</span> {}</pre>
+    </div>
+
+    <!-- Template usage -->
+    <div class="code-card">
+      <div class="code-header">
+        <span class="filename">app.component.html</span>
+        <span>Template usage</span>
+      </div>
+      <pre><span class="cmt">&lt;!-- Static --&gt;</span>
+<span class="tag">&lt;barcode-febraban</span> <span class="atr">sequence</span>=<span class="val">"1234567890"</span><span class="tag">&gt;&lt;/barcode-febraban&gt;</span>
+
+<span class="cmt">&lt;!-- Dynamic — re-renders via ngOnChanges --&gt;</span>
+<span class="tag">&lt;input</span> <span class="atr">[(ngModel)]</span>=<span class="val">"sequence"</span> <span class="tag">/&gt;</span>
+<span class="tag">&lt;barcode-febraban</span> <span class="atr">[sequence]</span>=<span class="val">"sequence"</span><span class="tag">&gt;&lt;/barcode-febraban&gt;</span>
+
+<span class="cmt">&lt;!-- Extra CSS class and inline styles --&gt;</span>
+<span class="tag">&lt;barcode-febraban</span>
+  <span class="atr">[sequence]</span>=<span class="val">"sequence"</span>
+  <span class="atr">cssClass</span>=<span class="val">"my-class"</span>
+  <span class="atr">[barcodeStyle]</span>=<span class="val">"{ fontSize: '80px' }"</span>
+<span class="tag">&gt;&lt;/barcode-febraban&gt;</span></pre>
+    </div>
+
+    <!-- Run steps -->
+    <div class="run-steps">
+      <div class="step-header">Running the Angular app</div>
+      <ol class="step-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>Install: <code>npm install @allansli/ng-barcode-febraban</code></span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Add to <code>angular.json</code> styles:<br>
+            <code>"node_modules/@allansli/barcode-febraban-core/assets/css/barcode.css"</code>
+          </span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Import <code>BarcodeFebrabanComponent</code> in a standalone component, or <code>BarcodeFebrabanModule</code> in an NgModule app</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Use <code>&lt;barcode-febraban [sequence]="myValue"&gt;&lt;/barcode-febraban&gt;</code> in any template</span>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <span>Build the package once: <code>cd packages/angular && npm run build</code></span>
+        </li>
+      </ol>
+    </div>
+
+    <div class="info-card">
+      <strong>How it works:</strong> The <code>BarcodeFebrabanComponent</code> implements
+      <code>OnChanges</code> to detect input changes. Each time <code>sequence</code> changes,
+      it calls <code>generateBarcodeSequence()</code> from
+      <code>@allansli/barcode-febraban-core</code> and stores the result in
+      <code>barcodeSequence</code>, which Angular's change detection renders in the template.
+    </div>
+  </div>
+
+  <!-- Core UMD — sets barcodeFebrabanCore global for the live demo -->
+  <script src="../packages/core/src/generate-barcode-sequence.js"></script>
+  <script>
+    // Initialize demo on page load
+    updateBarcode("1234567890");
+
+    function updateBarcode(value) {
+      var output  = document.getElementById("barcode-output");
+      var hint    = document.getElementById("empty-hint");
+      var display = document.getElementById("barcode-display");
+
+      if (!value) {
+        output.textContent = "";
+        hint.textContent   = "Type a numeric sequence above";
+        hint.style.display = "";
+        return;
+      }
+
+      var encoded = barcodeFebrabanCore.generateBarcodeSequence(value);
+
+      if (!encoded) {
+        output.textContent = "";
+        hint.textContent   = value.length % 2 !== 0
+          ? "Sequence must have an even number of digits (47-digit linha digitável is not converted)"
+          : "Sequence must be digits only";
+        hint.style.display = "";
+        return;
+      }
+
+      hint.style.display  = "none";
+      output.textContent  = encoded;
+      output.style.fontSize    = "100px";
+      output.style.lineHeight  = "1";
+      output.style.color       = "#0f172a";
+    }
+  </script>
+
+</body>
+</html>

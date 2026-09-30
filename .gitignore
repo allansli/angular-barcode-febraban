@@ -1,7 +1,19 @@
-/node_modules/
+node_modules/
 bower_components/
 npm-debug.log
 /tmp/
 /scripts/bower/bower-*
 .vscode
-/coverage/
+coverage/
+
+# Package dist outputs (built artefacts, not source)
+packages/*/dist/
+packages/*/lib/
+packages/angularjs/coverage/
+packages/react/src/*.map
+
+/dist/
+
+# OS
+.DS_Store
+Thumbs.db

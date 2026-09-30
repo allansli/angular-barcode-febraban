@@ -1,24 +1,192 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Angular Directive to Render Interleaved 2 of 5 Barcode - Demo</title>
-    <link rel="stylesheet" href="../css/barcode.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>barcode-febraban — Framework Demos</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 24px;
+    }
+
+    header { text-align: center; margin-bottom: 56px; }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #38bdf8, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      color: #94a3b8;
+      font-size: 1.05rem;
+      max-width: 520px;
+      line-height: 1.6;
+      margin: 0 auto 10px;
+    }
+
+    .core-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      color: #64748b;
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      max-width: 880px;
+      width: 100%;
+    }
+
+    .card {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 16px;
+      padding: 28px 24px 22px;
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .card:hover { transform: translateY(-5px); box-shadow: 0 20px 48px rgba(0,0,0,0.4); }
+
+    .card.angularjs:hover { border-color: #e23237; }
+    .card.react:hover     { border-color: #61dafb; }
+    .card.vue:hover       { border-color: #42b883; }
+    .card.angular:hover   { border-color: #dd0031; }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      align-self: flex-start;
+    }
+
+    .badge.angularjs { background: rgba(226,50,55,0.15); color: #e23237; }
+    .badge.react     { background: rgba(97,218,251,0.12); color: #61dafb; }
+    .badge.vue       { background: rgba(66,184,131,0.15); color: #42b883; }
+    .badge.angular   { background: rgba(221,0,49,0.15);   color: #dd0031; }
+
+    .card h2 { font-size: 1.2rem; font-weight: 600; }
+
+    .card p { color: #94a3b8; font-size: 0.875rem; line-height: 1.55; flex: 1; }
+
+    .card .pkg {
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.7rem;
+      color: #64748b;
+      background: #0f172a;
+      border-radius: 6px;
+      padding: 6px 10px;
+    }
+
+    .card .cta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #475569;
+      font-size: 0.85rem;
+      transition: color 0.18s;
+    }
+    .card:hover .cta { color: #e2e8f0; }
+
+    footer {
+      margin-top: 64px;
+      color: #475569;
+      font-size: 0.82rem;
+      text-align: center;
+      line-height: 1.7;
+    }
+    footer a { color: #64748b; }
+  </style>
 </head>
+<body>
 
-<body ng-app="barcode-demo">
+  <header>
+    <h1>barcode-febraban</h1>
+    <p>Font-encoder demos for <code>BarcodeInterleaved2of5.ttf</code> —
+       even-length digit strings, not a Febraban boleto parser.</p>
+    <span class="core-badge">⚙ @allansli/barcode-febraban-core</span>
+  </header>
 
-    <div ng-controller="BarcodeDemoController as bCtrl">
-        <span>Input Barcode Sequence: </span><input type="text" ng-model="bCtrl.sequence" />
-        <hr>
-        <ng-barcode-febraban barcode-sequence="{{bCtrl.sequence}}"></ng-barcode-febraban>
-    </div>
+  <div class="grid">
 
-    <script src="../../node_modules/angular/angular.min.js"></script>
-    <script src="../angular-barcode-febraban.min.js"></script>
-    <script src="index.js"></script>
-    <script src="indexController.js"></script>
+    <a class="card angularjs" href="angularjs.html">
+      <span class="badge angularjs">AngularJS 1.x</span>
+      <h2>AngularJS</h2>
+      <p>Element directive <code>&lt;ng-barcode-febraban&gt;</code> with
+         real-time <code>ng-model</code> two-way binding.</p>
+      <code class="pkg">@allansli/angular-barcode-febraban</code>
+      <div class="cta"><span>Open demo</span><span>→</span></div>
+    </a>
+
+    <a class="card react" href="react.html">
+      <span class="badge react">React 18+</span>
+      <h2>React</h2>
+      <p>Functional component <code>&lt;BarcodeFebraban&gt;</code> with
+         controlled input state via <code>useState</code> hook.</p>
+      <code class="pkg">@allansli/react-barcode-febraban</code>
+      <div class="cta"><span>Open demo</span><span>→</span></div>
+    </a>
+
+    <a class="card vue" href="vue.html">
+      <span class="badge vue">Vue 3</span>
+      <h2>Vue 3</h2>
+      <p>SFC component with reactive <code>v-model</code> and a computed
+         barcode sequence via the Composition API.</p>
+      <code class="pkg">@allansli/vue-barcode-febraban</code>
+      <div class="cta"><span>Open demo</span><span>→</span></div>
+    </a>
+
+    <a class="card angular" href="angular.html">
+      <span class="badge angular">Angular 15+</span>
+      <h2>Angular</h2>
+      <p>Standalone <code>BarcodeFebrabanComponent</code> (import directly)
+         plus an optional NgModule re-export.</p>
+      <code class="pkg">@allansli/ng-barcode-febraban</code>
+      <div class="cta"><span>Open demo</span><span>→</span></div>
+    </a>
+
+  </div>
+
+  <footer>
+    All demos use
+    <a href="../packages/core/src/generate-barcode-sequence.js">@allansli/barcode-febraban-core</a>
+    — font encoder for BarcodeInterleaved2of5.ttf (not a boleto parser).<br>
+    GitHub Pages demos load pinned framework CDNs (AngularJS 1.8.2, React 18.3.1,
+    Vue 3.4.38, Babel standalone 7.26.10) when those pages are opened.
+  </footer>
 
 </body>
-
 </html>
