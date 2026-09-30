@@ -353,6 +353,8 @@ jobs:
         run: |
           set -euo pipefail
           node -e 'const p=require("./dist/package.json"); console.log("Publishing " + p.name + "@" + p.version + " from dist/")'
-          npm publish dist/ --access public --provenance
+          # ./dist is the ng-packagr folder. A bare "dist" argument is the
+          # unrelated npm package named dist.
+          npm publish ./dist --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

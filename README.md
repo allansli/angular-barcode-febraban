@@ -73,7 +73,7 @@ The recommended release is a single GitHub Release. The workflow does not bump v
 
    `core` → `angularjs` → `react` → `vue` → `angular`
 
-   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from `dist/` (`npm publish dist/ --access public --provenance`). Every package uses `npm publish --access public --provenance`, `NODE_AUTH_TOKEN` from the `NPM_TOKEN` repository secret, and `id-token: write` for npm provenance. Packages are published on the `latest` dist-tag.
+   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from that folder (`npm publish ./dist --access public --provenance` in `packages/angular`). Every package uses `npm publish --access public --provenance`, `NODE_AUTH_TOKEN` from the `NPM_TOKEN` repository secret, and `id-token: write` for npm provenance. Packages are published on the `latest` dist-tag.
 
 `NPM_TOKEN` must be able to publish all five `@allansli/*` packages. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
 

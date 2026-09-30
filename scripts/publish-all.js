@@ -86,7 +86,9 @@ function shouldUseProvenance() {
 function publishFrom(pkg, pkgDir, isDryRun, distTag) {
   const parts = ["npm", "publish"];
   if (pkg.publishDir) {
-    parts.push(pkg.publishDir);
+    // "./dist" is a directory. A bare "dist" is the unrelated npm package
+    // of that name, which `npm publish dist` would pack instead.
+    parts.push(`./${pkg.publishDir}`);
   }
   parts.push("--access", "public");
   if (isDryRun) parts.push("--dry-run");
