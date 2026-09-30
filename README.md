@@ -67,6 +67,28 @@ npm run test:all
 
 The recommended release is a single GitHub Release. The workflow does not bump versions and does not publish from a pull request.
 
+### Dry-run before `NPM_TOKEN`
+
+Run this before adding the `NPM_TOKEN` secret and before publishing a release.
+
+1. Open **Actions**.
+2. Select **Publish all packages**.
+3. Click **Run workflow**.
+4. Leave **dry_run** checked (that is the default).
+5. Click **Run workflow**.
+
+That run uses the same tests and builds as a release, then `npm publish --access public --dry-run` for each package. Angular uses `npm publish ./dist --access public --dry-run`. It does not upload, does not read `NPM_TOKEN`, and does not pass `--provenance`.
+
+Unchecking **dry_run** publishes to npm for real (`--provenance` and `NPM_TOKEN`), the same as a `barcode-febraban@v*` release.
+
+GitHub shows **Run workflow** after this file is on the default branch. Until then, dispatch the branch that contains the workflow:
+
+```bash
+gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f dry_run=true
+```
+
+### Release
+
 1. Set `version` in each `package.json` (`packages/core`, `packages/angularjs`, `packages/react`, `packages/vue`, `packages/angular`) to the version you intend to publish. Commit those versions before cutting the release.
 2. Publish a GitHub Release whose tag is `barcode-febraban@v` plus [semver](https://semver.org/). Example: `barcode-febraban@v1.0.0`. The tag names that release cut and should align with it. Each package is published at the version already in its `package.json` (those versions can differ). Draft releases do not trigger publishing.
 3. [`.github/workflows/publish-barcode-febraban.yml`](.github/workflows/publish-barcode-febraban.yml) runs the tests and builds, then publishes in this order:

@@ -1,7 +1,11 @@
 # Recommended release path for the whole monorepo.
 #
-# Trigger: GitHub Release published, tag barcode-febraban@vX.Y.Z (semver after v).
-# Example: barcode-febraban@v1.0.0
+# Triggers:
+# - GitHub Release published, tag barcode-febraban@vX.Y.Z (semver after v).
+#   Example: barcode-febraban@v1.0.0. This path publishes for real.
+# - workflow_dispatch with input dry_run (boolean, default true).
+#   Checked: same tests and builds, then npm publish --dry-run.
+#   No NPM_TOKEN and no --provenance. Uncheck dry_run only for a real publish.
 #
 # Tests and builds every package, then publishes in order:
 #   core → angularjs → react → vue → angular
@@ -19,6 +23,13 @@ name: Publish all packages
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Pack only (checked). Uncheck to publish to npm for real."
+        type: boolean
+        default: true
+        required: false
 
 permissions:
   contents: read
@@ -32,7 +43,7 @@ jobs:
   validate:
     name: Validate release tag
     runs-on: ubuntu-latest
-    if: startsWith(github.event.release.tag_name, 'barcode-febraban@v')
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,6 +54,7 @@ jobs:
           node-version: 20
 
       - name: Require barcode-febraban@vX.Y.Z
+        if: github.event_name == 'release'
         env:
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         shell: bash
@@ -66,11 +78,15 @@ jobs:
 
       - name: Show package.json versions
         env:
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ github.event_name == 'release' && github.event.release.tag_name || format('workflow_dispatch dry_run={0}', github.event.inputs.dry_run) }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
         shell: bash
         run: |
           set -euo pipefail
           echo "Release tag: ${RELEASE_TAG}"
+          if [[ "${DRY_RUN}" == "true" ]]; then
+            echo "Dry run: npm publish --dry-run. Nothing is uploaded. NPM_TOKEN is not used."
+          fi
           echo "Publishing the versions already committed in package.json. This workflow does not bump them."
           echo "## ${RELEASE_TAG}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -96,7 +112,7 @@ jobs:
     name: Test & build (${{ matrix.name }})
     needs: validate
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.validate.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.validate.result == 'success' }}
     strategy:
       fail-fast: false
       matrix:
@@ -165,7 +181,7 @@ jobs:
     name: Publish core
     needs: test
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.test.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.test.result == 'success' }}
     permissions:
       contents: read
       actions: write
@@ -175,16 +191,33 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
           cache: npm
 
+      - name: Setup Node.js (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
       - name: Install dependencies (monorepo root)
         run: npm ci
 
+      - name: Dry-run @allansli/barcode-febraban-core
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        working-directory: packages/core
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
+          npm publish --access public --dry-run
+
       - name: Publish @allansli/barcode-febraban-core
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         working-directory: packages/core
         run: |
           set -euo pipefail
@@ -197,7 +230,7 @@ jobs:
     name: Publish angularjs
     needs: publish-core
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-core.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.publish-core.result == 'success' }}
     permissions:
       contents: read
       actions: write
@@ -207,10 +240,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Setup Node.js (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -224,7 +265,16 @@ jobs:
         working-directory: packages/angularjs
         run: test -f dist/angular-barcode-febraban.min.js && test -d dist/css
 
+      - name: Dry-run @allansli/angular-barcode-febraban
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        working-directory: packages/angularjs
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
+          npm publish --access public --dry-run
+
       - name: Publish @allansli/angular-barcode-febraban
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         working-directory: packages/angularjs
         run: |
           set -euo pipefail
@@ -237,7 +287,7 @@ jobs:
     name: Publish react
     needs: publish-angularjs
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-angularjs.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.publish-angularjs.result == 'success' }}
     permissions:
       contents: read
       actions: write
@@ -247,10 +297,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Setup Node.js (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -264,7 +322,16 @@ jobs:
         working-directory: packages/react
         run: test -f dist/index.esm.js && test -f dist/index.cjs.js
 
+      - name: Dry-run @allansli/react-barcode-febraban
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        working-directory: packages/react
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
+          npm publish --access public --dry-run
+
       - name: Publish @allansli/react-barcode-febraban
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         working-directory: packages/react
         run: |
           set -euo pipefail
@@ -277,7 +344,7 @@ jobs:
     name: Publish vue
     needs: publish-react
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-react.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.publish-react.result == 'success' }}
     permissions:
       contents: read
       actions: write
@@ -287,10 +354,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Setup Node.js (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -304,7 +379,16 @@ jobs:
         working-directory: packages/vue
         run: test -f dist/index.es.js && test -f dist/index.cjs.js
 
+      - name: Dry-run @allansli/vue-barcode-febraban
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        working-directory: packages/vue
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
+          npm publish --access public --dry-run
+
       - name: Publish @allansli/vue-barcode-febraban
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         working-directory: packages/vue
         run: |
           set -euo pipefail
@@ -317,7 +401,7 @@ jobs:
     name: Publish angular
     needs: publish-vue
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.event.release.tag_name, 'barcode-febraban@v') && needs.publish-vue.result == 'success' }}
+    if: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'barcode-febraban@v')) && needs.publish-vue.result == 'success' }}
     permissions:
       contents: read
       actions: write
@@ -327,10 +411,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         uses: actions/setup-node@v4
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Setup Node.js (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -348,7 +440,18 @@ jobs:
           test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs
           test -f dist/index.d.ts
 
+      - name: Dry-run @allansli/ng-barcode-febraban from dist/
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true' }}
+        working-directory: packages/angular
+        run: |
+          set -euo pipefail
+          node -e 'const p=require("./dist/package.json"); console.log("Dry run " + p.name + "@" + p.version + " from dist/")'
+          # ./dist is the ng-packagr folder. A bare "dist" argument is the
+          # unrelated npm package named dist.
+          npm publish ./dist --access public --dry-run
+
       - name: Publish @allansli/ng-barcode-febraban from dist/
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.dry_run != 'true' }}
         working-directory: packages/angular
         run: |
           set -euo pipefail
