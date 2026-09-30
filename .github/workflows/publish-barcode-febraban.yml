@@ -11,10 +11,12 @@
 #   request run is how to exercise the workflow before that.
 #
 # Real publishes use npm Trusted Publishing (OIDC), not secrets.NPM_TOKEN.
-# Publish jobs keep id-token: write, run on Node 24, and install npm@latest
-# before npm publish (OIDC needs npm >= 11.5.1). setup-node registry-url is
-# omitted: it writes //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}, and
-# an empty token makes npm skip the OIDC exchange.
+# Publish jobs keep id-token: write. Install and build stay on Node 20
+# (gulp-cssmin's clean-css calls util.isRegExp, removed in Node 24).
+# The real npm publish step then switches to Node 24 and installs npm@latest
+# (OIDC needs npm >= 11.5.1). setup-node registry-url is omitted: it writes
+# //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}, and an empty token
+# makes npm skip the OIDC exchange.
 # Trusted publisher on npm must list GitHub user allansli, repo
 # angular-barcode-febraban, workflow publish-barcode-febraban.yml (filename
 # only), and allow npm publish. Leave environment name empty.
@@ -207,12 +209,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node 24. No registry-url: that input writes an _authToken line which
-      # blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -225,6 +226,14 @@ jobs:
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
+
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Upgrade npm for OIDC trusted publishing
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
@@ -265,12 +274,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node 24. No registry-url: that input writes an _authToken line which
-      # blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -291,6 +299,14 @@ jobs:
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
+
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Upgrade npm for OIDC trusted publishing
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
@@ -331,12 +347,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node 24. No registry-url: that input writes an _authToken line which
-      # blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -357,6 +372,14 @@ jobs:
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
+
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Upgrade npm for OIDC trusted publishing
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
@@ -397,12 +420,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node 24. No registry-url: that input writes an _authToken line which
-      # blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -423,6 +445,14 @@ jobs:
           set -euo pipefail
           node -e 'const p=require("./package.json"); console.log("Dry run " + p.name + "@" + p.version)'
           npm publish --access public --dry-run
+
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Upgrade npm for OIDC trusted publishing
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
@@ -463,12 +493,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Node 24. No registry-url: that input writes an _authToken line which
-      # blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      # Node 20 matches the test jobs. Node 24 breaks gulp-cssmin (util.isRegExp).
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -495,6 +524,14 @@ jobs:
           # ./dist is the ng-packagr folder. A bare "dist" argument is the
           # unrelated npm package named dist.
           npm publish ./dist --access public --dry-run
+
+      # Node 24 and no registry-url. registry-url writes an _authToken line
+      # that blocks the OIDC exchange when NODE_AUTH_TOKEN is unset.
+      - name: Setup Node.js for trusted publishing
+        if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
 
       - name: Upgrade npm for OIDC trusted publishing
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}

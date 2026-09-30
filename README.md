@@ -95,7 +95,7 @@ gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f
 
    `core` → `angularjs` → `react` → `vue` → `angular`
 
-   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from that folder (`npm publish ./dist --access public --provenance` in `packages/angular`). Every package uses `npm publish --access public --provenance` on Node 24 after `npm install -g npm@latest`. Authentication is npm Trusted Publishing (OIDC): each publish job has `id-token: write` and does not use `NPM_TOKEN`. Packages are published on the `latest` dist-tag.
+   React, Vue, and AngularJS are built before publish. Angular is built with ng-packagr and published from that folder (`npm publish ./dist --access public --provenance` in `packages/angular`). Every package is installed and built on Node 20, then published with `npm publish --access public --provenance` on Node 24 after `npm install -g npm@latest`. Authentication is npm Trusted Publishing (OIDC): each publish job has `id-token: write` and does not use `NPM_TOKEN`. Packages are published on the `latest` dist-tag.
 
 On each package, add a GitHub Actions trusted publisher for user `allansli`, repository `angular-barcode-febraban`, workflow filename `publish-barcode-febraban.yml`, no environment, and allow `npm publish`. Provenance is generated for this public repository. Publishing the release sends each package to the npm `latest` dist-tag, including when the GitHub Release is marked as a pre-release.
 
