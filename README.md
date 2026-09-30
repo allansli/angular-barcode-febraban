@@ -81,7 +81,7 @@ That run uses the same tests and builds as a release, then `npm publish --access
 
 Unchecking **dry_run** publishes to npm for real (`--provenance` and `NPM_TOKEN`), the same as a `barcode-febraban@v*` release.
 
-GitHub shows **Run workflow** after this file is on the default branch. Until then, dispatch the branch that contains the workflow:
+GitHub shows **Run workflow** after this file is on the default branch. A pull request that touches this workflow runs the same dry-run, which is the check to watch on PR #10 before merge. Until the button is available, you can also dispatch the branch that contains the workflow:
 
 ```bash
 gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f dry_run=true
