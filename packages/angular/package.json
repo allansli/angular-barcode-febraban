@@ -1,6 +1,6 @@
 {
   "name": "@allansli/ng-barcode-febraban",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Angular component that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
@@ -35,7 +35,7 @@
     "@angular/core": ">=15.0.0"
   },
   "dependencies": {
-    "@allansli/barcode-febraban-core": "^1.0.0"
+    "@allansli/barcode-febraban-core": "^2.0.0"
   },
   "devDependencies": {
     "@angular/common": "^17.0.0",

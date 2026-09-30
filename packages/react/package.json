@@ -1,6 +1,6 @@
 {
   "name": "@allansli/react-barcode-febraban",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "React component that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",
@@ -50,7 +50,7 @@
     "react": ">=16.8.0"
   },
   "dependencies": {
-    "@allansli/barcode-febraban-core": "^1.0.0"
+    "@allansli/barcode-febraban-core": "^2.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.23.0",

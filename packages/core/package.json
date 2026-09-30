@@ -1,6 +1,6 @@
 {
   "name": "@allansli/barcode-febraban-core",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Font encoder for BarcodeInterleaved2of5.ttf (ITF). Not a Febraban boleto parser.",
   "main": "src/index.js",
   "module": "src/index.esm.js",

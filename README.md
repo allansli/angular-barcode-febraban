@@ -10,11 +10,11 @@ This is **not** a Febraban boleto engine: there is no 47-digit linha digitável 
 
 | Package | Version | Description |
 |---|---|---|
-| [`@allansli/barcode-febraban-core`](packages/core/README.md) | core | Pure JS encoder — framework-agnostic |
-| [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 1.1.0 | AngularJS (1.x) directive |
-| [`@allansli/react-barcode-febraban`](packages/react/README.md) | 1.0.0 | React 16.8+ component |
-| [`@allansli/vue-barcode-febraban`](packages/vue/README.md) | 1.0.0 | Vue 3 component |
-| [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 1.0.0 | Angular 15+ standalone component |
+| [`@allansli/barcode-febraban-core`](packages/core/README.md) | 2.0.0 | Pure JS encoder — framework-agnostic |
+| [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 2.0.0 | AngularJS (1.x) directive |
+| [`@allansli/react-barcode-febraban`](packages/react/README.md) | 2.0.0 | React 16.8+ component |
+| [`@allansli/vue-barcode-febraban`](packages/vue/README.md) | 2.0.0 | Vue 3 component |
+| [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 2.0.0 | Angular 15+ standalone component |
 
 All framework packages consume `@allansli/barcode-febraban-core`.
 
@@ -90,7 +90,7 @@ gh workflow run "Publish all packages" --ref claude/decouple-js-library-U9HKc -f
 ### Release
 
 1. Set `version` in each `package.json` (`packages/core`, `packages/angularjs`, `packages/react`, `packages/vue`, `packages/angular`) to the version you intend to publish. Commit those versions before cutting the release.
-2. Publish a GitHub Release whose tag is `barcode-febraban@v` plus [semver](https://semver.org/). Example: `barcode-febraban@v1.0.0`. The tag names that release cut and should align with it. Each package is published at the version already in its `package.json` (those versions can differ). Draft releases do not trigger publishing.
+2. Publish a GitHub Release whose tag is `barcode-febraban@v` plus [semver](https://semver.org/). Example: `barcode-febraban@v2.0.0`. The tag names that release cut and should align with it. Each package is published at the version already in its `package.json` (those versions can differ). Draft releases do not trigger publishing.
 3. [`.github/workflows/publish-barcode-febraban.yml`](.github/workflows/publish-barcode-febraban.yml) runs the tests and builds, then publishes in this order:
 
    `core` → `angularjs` → `react` → `vue` → `angular`
