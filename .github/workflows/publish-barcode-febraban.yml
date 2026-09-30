@@ -6,17 +6,16 @@
 # - workflow_dispatch with input dry_run (boolean, default true).
 #   Checked: same tests and builds, then npm publish --dry-run.
 #   No NPM_TOKEN and no --provenance. Uncheck dry_run only for a real publish.
-# - pull_request: always a dry-run (same commands). GitHub only shows
-#   Run workflow once this file is on the default branch, so the pull
-#   request run is how to exercise the workflow before that.
+# - pull_request to master or main: always a dry-run (same tests and
+#   builds, then npm publish --dry-run) when packages, the lockfile,
+#   scripts, or this workflow change. That is the monorepo PR check.
+#   GitHub only shows Run workflow once this file is on the default branch.
 #
 # Tests and builds every package, then publishes in order:
 #   core → angularjs → react → vue → angular
 # A failed job skips every job after it.
 #
-# Per-package tags (core@v*, angularjs@v*, react@v*, vue@v*, angular@v*)
-# stay on their own workflows. Those prefixes do not match this tag, and
-# this tag does not match those prefixes.
+# This is the only workflow. Tags such as core@v* do not publish on their own.
 #
 # Package.json versions are published as committed. This workflow does not
 # bump them. Angular is published from the ng-packagr dist/ directory.
@@ -34,7 +33,12 @@ on:
         default: true
         required: false
   pull_request:
+    branches: [master, main]
     paths:
+      - "packages/**"
+      - "package.json"
+      - "package-lock.json"
+      - "scripts/**"
       - ".github/workflows/publish-barcode-febraban.yml"
 
 permissions:
