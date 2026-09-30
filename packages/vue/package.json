@@ -1,6 +1,6 @@
 {
   "name": "@allansli/vue-barcode-febraban",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Vue 3 component for Brazilian boleto ITF barcodes (Interleaved 2 of 5 / Febraban). Encodes an even-length digit string for BarcodeInterleaved2of5. Not EAN, UPC, Code 128, or a linha digitável converter.",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",

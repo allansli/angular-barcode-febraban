@@ -1,6 +1,6 @@
 {
   "name": "@allansli/ng-barcode-febraban",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Angular (15+) component for Brazilian boleto ITF barcodes (Interleaved 2 of 5 / Febraban). Encodes an even-length digit string for BarcodeInterleaved2of5. Not EAN, UPC, Code 128, or a linha digitável converter.",
   "scripts": {
     "build": "ng-packagr -p ng-package.json",
