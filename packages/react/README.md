@@ -1,18 +1,20 @@
 # @allansli/react-barcode-febraban
 
-React component that encodes an even-length digit string for **`BarcodeInterleaved2of5.ttf`**. It is a font encoder, not a Febraban boleto parser (no 47→44 linha digitável conversion, no DAC).
+Draw the barcode on a **Brazilian boleto** in React. That barcode is **ITF (Interleaved 2 of 5)**, the symbology **Febraban** uses. `@allansli/react-barcode-febraban` encodes an even-length digit string (usually the 44-digit código de barras) and renders it with `BarcodeInterleaved2of5.ttf`.
 
-Requires **React 16.8+** (`createElement` only; the GitHub Pages demo uses React 18 `createRoot`). Powered by [`@allansli/barcode-febraban-core`](../core/README.md).
+It does not convert a 47-digit linha digitável, and it does not compute the módulo-11 DAC. Encoding is [`@allansli/barcode-febraban-core`](../core/README.md). Requires **React 16.8+** (`createElement` only; the GitHub Pages demo uses React 18 `createRoot`).
 
----
+Sibling packages: [`@allansli/vue-barcode-febraban`](../vue/README.md), [`@allansli/ng-barcode-febraban`](../angular/README.md) (Angular 15+), [`@allansli/angular-barcode-febraban`](../angularjs/README.md) (AngularJS 1.x).
 
-## Installation
+## Install
 
 ```bash
 npm install @allansli/react-barcode-febraban
 ```
 
-## Usage
+`@allansli/barcode-febraban-core` is a dependency. React is a peer dependency (`>=16.8.0`).
+
+## Minimal example
 
 ```jsx
 import BarcodeFebraban from "@allansli/react-barcode-febraban";
@@ -22,6 +24,19 @@ function App() {
   return <BarcodeFebraban sequence="1234567890" />;
 }
 ```
+
+`sequence` must be a string. A 44-digit código de barras is not safe as a JavaScript number.
+
+## When to use
+
+- The screen is **React 16.8+** and you need a **Brazilian boleto ITF** barcode (Febraban / Interleaved 2 of 5).
+- You already have an **even-length digit string** and will draw it with **`BarcodeInterleaved2of5.ttf`**.
+
+## When not to use
+
+- **EAN**, **UPC**, **Code 128**, QR, or any symbology other than ITF.
+- You still need to turn a **linha digitável** (47 digits) into a código de barras, or to calculate the **DAC**.
+- The app is Vue, Angular, AngularJS, or plain JS — use that package (or `@allansli/barcode-febraban-core`) instead.
 
 ## Props
 

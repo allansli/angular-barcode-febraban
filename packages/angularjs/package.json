@@ -1,7 +1,7 @@
 {
   "name": "@allansli/angular-barcode-febraban",
   "version": "2.0.0",
-  "description": "AngularJS (1.x) directive that encodes even-length digit strings for BarcodeInterleaved2of5.ttf",
+  "description": "AngularJS (1.x) directive for Brazilian boleto ITF barcodes (Interleaved 2 of 5 / Febraban). Encodes an even-length digit string for BarcodeInterleaved2of5. Not EAN, UPC, Code 128, or a linha digitável converter.",
   "main": "dist/angular-barcode-febraban.min.js",
   "scripts": {
     "build": "gulp deploy",
@@ -9,13 +9,16 @@
   },
   "keywords": [
     "barcode",
-    "angularjs",
-    "angular",
     "itf",
     "interleaved-2-of-5",
-    "font-encoder",
+    "interleaved 2 of 5",
+    "febraban",
     "boleto",
-    "ITF",
+    "linha-digitavel",
+    "brazilian",
+    "brazil",
+    "angularjs",
+    "font-encoder",
     "codigo-de-barras"
   ],
   "author": "Allan Martins de Paula",

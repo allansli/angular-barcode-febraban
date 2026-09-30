@@ -1,24 +1,69 @@
 # barcode-febraban
 
-Monorepo of **font encoders** for `BarcodeInterleaved2of5.ttf`. Each package turns an even-length digit string into the character sequence that font renders as an ITF (Interleaved 2 of 5) barcode.
+Draw the **barcode on a Brazilian boleto**. A boleto’s barcode is **ITF (Interleaved 2 of 5)**, specified by **Febraban**. These packages turn an even-length digit string — usually the 44-digit código de barras — into the character sequence that `BarcodeInterleaved2of5.ttf` renders as that barcode.
 
-This is **not** a Febraban boleto engine: there is no 47-digit linha digitável → 44-digit código de barras conversion, and no módulo-11 DAC.
+You already have the digits. Nothing here parses a bank slip, converts a 47-digit linha digitável into 44 digits, or computes the módulo-11 DAC.
 
----
+Coding agents: start at [`llms.txt`](./llms.txt).
+
+## Install
+
+Pick one package. Every framework package depends on `@allansli/barcode-febraban-core` (published together at 2.0.0).
+
+```bash
+npm install @allansli/barcode-febraban-core          # vanilla JS
+npm install @allansli/angular-barcode-febraban       # AngularJS 1.x
+npm install @allansli/react-barcode-febraban         # React 16.8+
+npm install @allansli/vue-barcode-febraban           # Vue 3
+npm install @allansli/ng-barcode-febraban            # Angular 15+
+```
+
+## Minimal example
+
+```js
+import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
+
+// Even-length digits. A 44-digit código de barras works the same way.
+// A 47-digit linha digitável returns "".
+const sequence = generateBarcodeSequence("1234567890");
+```
+
+Render `sequence` with `font-family: BarcodeInterleaved2of5` (CSS is in the core package; the TTF is not on npm — host it yourself). Framework components do the encoding for you:
+
+```jsx
+import BarcodeFebraban from "@allansli/react-barcode-febraban";
+import "@allansli/barcode-febraban-core/assets/css/barcode.css";
+
+export function BoletoBarcode() {
+  return <BarcodeFebraban sequence="1234567890" />;
+}
+```
+
+## When to use
+
+- You need the **ITF / Interleaved 2 of 5** barcode printed on a **Brazilian boleto** (Febraban).
+- The input is a **string of digits with even length**. The usual value is the 44-digit código de barras.
+- You will draw it with **`BarcodeInterleaved2of5.ttf`** (this repo’s font encoder, not a generic barcode image).
+- Your UI is **vanilla JS**, **AngularJS 1.x**, **React**, **Vue 3**, or **Angular 15+**.
+
+## When not to use
+
+- **EAN**, **UPC**, **Code 128**, QR, Data Matrix, or any symbology other than ITF.
+- You still have a **47-digit linha digitável** and need the 44-digit código de barras. This repo does not convert it (odd length returns an empty barcode).
+- You need the **DAC (módulo 11)**, nosso número, or a full boleto PDF.
+- You need an SVG or canvas barcode that does not use this TrueType font.
 
 ## Packages
 
-| Package | Version | Description |
+| Package | Version | Use it for |
 |---|---|---|
-| [`@allansli/barcode-febraban-core`](packages/core/README.md) | 2.0.0 | Pure JS encoder — framework-agnostic |
-| [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 2.0.0 | AngularJS (1.x) directive |
+| [`@allansli/barcode-febraban-core`](packages/core/README.md) | 2.0.0 | Vanilla JS encoder (`vanilla-core`) |
+| [`@allansli/angular-barcode-febraban`](packages/angularjs/README.md) | 2.0.0 | AngularJS 1.x directive |
 | [`@allansli/react-barcode-febraban`](packages/react/README.md) | 2.0.0 | React 16.8+ component |
 | [`@allansli/vue-barcode-febraban`](packages/vue/README.md) | 2.0.0 | Vue 3 component |
 | [`@allansli/ng-barcode-febraban`](packages/angular/README.md) | 2.0.0 | Angular 15+ standalone component |
 
-All framework packages consume `@allansli/barcode-febraban-core`.
-
----
+Live demos (GitHub Pages): [index](https://allansli.github.io/angular-barcode-febraban/demo/), [AngularJS](https://allansli.github.io/angular-barcode-febraban/demo/angularjs.html), [React](https://allansli.github.io/angular-barcode-febraban/demo/react.html), [Vue](https://allansli.github.io/angular-barcode-febraban/demo/vue.html), [Angular](https://allansli.github.io/angular-barcode-febraban/demo/angular.html).
 
 ## Architecture
 
@@ -35,19 +80,6 @@ barcode-febraban (npm workspaces monorepo)
 
 The published libraries live only under `packages/`. There is no parallel
 AngularJS product at the repository root.
-
----
-
-## Quick start
-
-Pass a **string** of digits with even length (a 44-digit código de barras is fine). A 47-digit linha digitável returns an empty barcode.
-
-```js
-import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
-const sequence = generateBarcodeSequence("1234567890");
-```
-
-See each package README for framework usage.
 
 ---
 

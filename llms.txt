@@ -1,0 +1,44 @@
+# barcode-febraban
+
+> npm packages that draw a Brazilian boleto barcode (ITF / Interleaved 2 of 5 / Febraban) from an even-length digit string, using the BarcodeInterleaved2of5 font. Published at 2.0.0 as @allansli/barcode-febraban-core, @allansli/angular-barcode-febraban (AngularJS 1.x), @allansli/react-barcode-febraban, @allansli/vue-barcode-febraban, and @allansli/ng-barcode-febraban (Angular 15+). Not EAN, UPC, or Code 128.
+
+Pass a string of digits with even length, usually the 44-digit código de barras. A 47-digit linha digitável is odd, so it returns an empty barcode: these packages do not convert linha digitável and do not compute the módulo-11 DAC. npm ships the encoder and CSS only. Host BarcodeInterleaved2of5.ttf yourself.
+
+Choose one package:
+
+- Vanilla JS (`vanilla-core`): `@allansli/barcode-febraban-core` — `generateBarcodeSequence(digits)`
+- AngularJS 1.x: `@allansli/angular-barcode-febraban` — `<ng-barcode-febraban barcode-sequence="...">`
+- React 16.8+: `@allansli/react-barcode-febraban` — `<BarcodeFebraban sequence="..." />`
+- Vue 3: `@allansli/vue-barcode-febraban` — `<BarcodeFebraban sequence="..." />`
+- Angular 15+: `@allansli/ng-barcode-febraban` — `<barcode-febraban [sequence]="..."></barcode-febraban>`
+
+`@allansli/angular-barcode-febraban` is AngularJS. `@allansli/ng-barcode-febraban` is Angular. Do not swap them.
+
+## Docs
+
+- [Monorepo README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/README.md): Problem, install, minimal example, when to use and when not to use
+- [Core README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/packages/core/README.md): `@allansli/barcode-febraban-core` — `generateBarcodeSequence`, font, and CSS
+- [AngularJS README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/packages/angularjs/README.md): `@allansli/angular-barcode-febraban` directive
+- [React README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/packages/react/README.md): `@allansli/react-barcode-febraban` component
+- [Vue README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/packages/vue/README.md): `@allansli/vue-barcode-febraban` Vue 3 component
+- [Angular README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/packages/angular/README.md): `@allansli/ng-barcode-febraban` Angular 15+ component
+- [Compact agent guide](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/llms-full.txt): Install lines and one working snippet per package
+
+## Examples
+
+- [Demo index](https://allansli.github.io/angular-barcode-febraban/demo/): Framework chooser for the five packages
+- [Core usage in the monorepo README](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/README.md): `generateBarcodeSequence("1234567890")` from `@allansli/barcode-febraban-core`
+- [React demo](https://allansli.github.io/angular-barcode-febraban/demo/react.html): `@allansli/react-barcode-febraban`
+- [Vue demo](https://allansli.github.io/angular-barcode-febraban/demo/vue.html): `@allansli/vue-barcode-febraban`
+- [Angular demo](https://allansli.github.io/angular-barcode-febraban/demo/angular.html): `@allansli/ng-barcode-febraban`
+- [AngularJS demo](https://allansli.github.io/angular-barcode-febraban/demo/angularjs.html): `@allansli/angular-barcode-febraban`
+
+## Optional
+
+- [GitHub Pages home](https://allansli.github.io/angular-barcode-febraban/): Rendered monorepo README
+- [npm @allansli/barcode-febraban-core](https://www.npmjs.com/package/@allansli/barcode-febraban-core): Vanilla JS encoder
+- [npm @allansli/angular-barcode-febraban](https://www.npmjs.com/package/@allansli/angular-barcode-febraban): AngularJS 1.x
+- [npm @allansli/react-barcode-febraban](https://www.npmjs.com/package/@allansli/react-barcode-febraban): React
+- [npm @allansli/vue-barcode-febraban](https://www.npmjs.com/package/@allansli/vue-barcode-febraban): Vue 3
+- [npm @allansli/ng-barcode-febraban](https://www.npmjs.com/package/@allansli/ng-barcode-febraban): Angular 15+
+- [Font notice](https://raw.githubusercontent.com/allansli/angular-barcode-febraban/master/NOTICE): The TTF in git is not MIT and is not published to npm
