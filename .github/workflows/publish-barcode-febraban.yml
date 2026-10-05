@@ -151,7 +151,7 @@ jobs:
             dir: packages/angular
             build: "true"
             build_before_test: "false"
-            verify: "test -f dist/package.json && test -f dist/esm2022/allansli-ng-barcode-febraban.mjs && test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs && test -f dist/index.d.ts"
+            verify: "test -f dist/package.json && test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs && test -f dist/types/allansli-ng-barcode-febraban.d.ts"
 
     steps:
       - name: Checkout
@@ -160,7 +160,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -204,7 +204,7 @@ jobs:
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -212,7 +212,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -253,7 +253,7 @@ jobs:
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -261,7 +261,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -310,7 +310,7 @@ jobs:
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -318,7 +318,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -367,7 +367,7 @@ jobs:
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -375,7 +375,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -424,7 +424,7 @@ jobs:
         if: ${{ github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run != 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           registry-url: https://registry.npmjs.org
           cache: npm
 
@@ -432,7 +432,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.22.3
           cache: npm
 
       - name: Install dependencies (monorepo root)
@@ -446,9 +446,8 @@ jobs:
         working-directory: packages/angular
         run: |
           test -f dist/package.json
-          test -f dist/esm2022/allansli-ng-barcode-febraban.mjs
           test -f dist/fesm2022/allansli-ng-barcode-febraban.mjs
-          test -f dist/index.d.ts
+          test -f dist/types/allansli-ng-barcode-febraban.d.ts
 
       - name: Dry-run @allansli/ng-barcode-febraban from dist/
         if: ${{ github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true') }}
