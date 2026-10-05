@@ -1,11 +1,20 @@
-import React from "react";
+import React, { act } from "react";
 import renderer from "react-test-renderer";
 import { generateBarcodeSequence } from "@allansli/barcode-febraban-core";
 import { BarcodeFebraban } from "../src/BarcodeFebraban";
 
+// React 19 runs react-test-renderer concurrently, so the tree is empty until act() flushes it.
+function renderTree(props) {
+  let view;
+  act(() => {
+    view = renderer.create(React.createElement(BarcodeFebraban, props));
+  });
+  return view.toJSON();
+}
+
 function renderText(sequence) {
-  const tree = renderer.create(React.createElement(BarcodeFebraban, { sequence })).toJSON();
-  return tree.children ? tree.children.join("") : "";
+  const tree = renderTree({ sequence });
+  return tree && tree.children ? tree.children.join("") : "";
 }
 
 describe("BarcodeFebraban", function () {
@@ -36,9 +45,7 @@ describe("BarcodeFebraban", function () {
   });
 
   it("applies extra class names", function () {
-    const tree = renderer
-      .create(React.createElement(BarcodeFebraban, { sequence: "00", className: "extra" }))
-      .toJSON();
+    const tree = renderTree({ sequence: "00", className: "extra" });
     expect(tree.props.className).toBe("barcodei2of5 extra");
   });
 });

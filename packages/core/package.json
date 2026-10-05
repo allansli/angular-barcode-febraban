@@ -1,6 +1,6 @@
 {
   "name": "@allansli/barcode-febraban-core",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Vanilla JS encoder for Brazilian boleto ITF barcodes (Interleaved 2 of 5 / Febraban). Maps an even-length digit string to the BarcodeInterleaved2of5 font. Not EAN, UPC, Code 128, or a linha digitável converter.",
   "main": "src/index.js",
   "module": "src/index.esm.js",
@@ -58,6 +58,6 @@
     "access": "public"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^30.5.2"
   }
 }
