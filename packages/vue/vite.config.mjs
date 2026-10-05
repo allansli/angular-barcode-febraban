@@ -1,12 +1,15 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import { resolve } from "path";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const rootDir = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [vue()],
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.js"),
+      entry: resolve(rootDir, "src/index.js"),
       name: "VueBarcodeFebraban",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format}.js`
