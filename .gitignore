@@ -17,3 +17,6 @@ packages/react/src/*.map
 # OS
 .DS_Store
 Thumbs.db
+
+# /brag-slim render intermediates (frames, stems). The deliverable is docs/videos/.
+brag-output/
