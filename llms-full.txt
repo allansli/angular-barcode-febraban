@@ -5,7 +5,7 @@
 Repository: https://github.com/allansli/angular-barcode-febraban
 Pages: https://allansli.github.io/angular-barcode-febraban/
 Index for agents: https://allansli.github.io/angular-barcode-febraban/llms.txt
-Versions on npm: 2.0.0. Do not bump them from docs.
+Versions are in each package.json (2.0.2 on master). Do not bump them from docs.
 
 ## Which package
 
