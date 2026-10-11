@@ -6,6 +6,12 @@ You already have the digits. Nothing here parses a bank slip, converts a 47-digi
 
 Coding agents: start at [`llms.txt`](./llms.txt).
 
+[![barcode-febraban launch video](docs/videos/barcode-febraban-brag.jpg)](docs/videos/barcode-febraban-brag.mp4)
+
+[▶ Watch the 20s launch video](docs/videos/barcode-febraban-brag.mp4)
+
+<video src="docs/videos/barcode-febraban-brag.mp4" poster="docs/videos/barcode-febraban-brag.jpg" controls width="720"></video>
+
 ## Install
 
 Pick one package. Every framework package depends on `@allansli/barcode-febraban-core` (published together at 2.0.0).
