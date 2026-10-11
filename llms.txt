@@ -1,6 +1,6 @@
 # barcode-febraban
 
-> npm packages that draw a Brazilian boleto barcode (ITF / Interleaved 2 of 5 / Febraban) from an even-length digit string, using the BarcodeInterleaved2of5 font. Published at 2.0.0 as @allansli/barcode-febraban-core, @allansli/angular-barcode-febraban (AngularJS 1.x), @allansli/react-barcode-febraban, @allansli/vue-barcode-febraban, and @allansli/ng-barcode-febraban (Angular 15+). Not EAN, UPC, or Code 128.
+> npm packages that draw a Brazilian boleto barcode (ITF / Interleaved 2 of 5 / Febraban) from an even-length digit string, using the BarcodeInterleaved2of5 font. Published as @allansli/barcode-febraban-core, @allansli/angular-barcode-febraban (AngularJS 1.x), @allansli/react-barcode-febraban, @allansli/vue-barcode-febraban, and @allansli/ng-barcode-febraban (Angular 15+). Not EAN, UPC, or Code 128.
 
 Pass a string of digits with even length, usually the 44-digit código de barras. A 47-digit linha digitável is odd, so it returns an empty barcode: these packages do not convert linha digitável and do not compute the módulo-11 DAC. npm ships the encoder and CSS only. Host BarcodeInterleaved2of5.ttf yourself.
 
